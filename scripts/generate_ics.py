@@ -50,6 +50,9 @@ TZ = ZoneInfo(TIMEZONE_ID)
 
 MATCH_DURATION = timedelta(hours=2)
 REFRESH_HOURS = 12
+
+# Used as DTSTAMP when a source does not say when a fixture last changed.
+EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
 PRODID = "-//edwardsmit//Feyenoord Calendar//EN"
 UID_DOMAIN = "feyenoord-cal.edwardsmit.github.io"
 
@@ -416,19 +419,21 @@ def sequence_for(match: Match) -> int:
 
 def dtstamp_for(match: Match) -> datetime:
     """
-    When this event was last stamped. Must NOT depend on the wall clock.
+    When this description of the fixture was last changed.
 
-    The workflow only commits when the generated files actually differ, so a
-    value that changes every run would produce an endless stream of no-op
-    commits and defeat caching for subscribers.
+    Must NOT depend on the wall clock. The workflow only commits when the
+    generated files really differ, so a value that changed every run would
+    produce an endless stream of no-op commits and defeat caching for
+    subscribers.
 
-    TODO (Edward): decide the fallback chain. `last_updated` is None for every
-    ESPN cup fixture, so at least one more rung is needed. Falling back to
-    `start_utc` reads naturally but moves backwards if a match is brought
-    forward; a fixed constant is stable but claims every cup match was stamped
-    in 1970. The provisional choice below is the former.
+    ESPN gives no equivalent of football-data.org's lastUpdated, so cup
+    fixtures fall back to a fixed constant rather than to their own kickoff
+    time: a match brought forward would otherwise have its DTSTAMP move
+    backwards, which a strict client may read as a stale description and
+    ignore. A constant makes no ordering claim at all. Use SEQUENCE, not
+    DTSTAMP, if cup reschedules ever need to be signalled properly.
     """
-    return match.last_updated or match.start_utc or datetime(1970, 1, 1, tzinfo=timezone.utc)
+    return match.last_updated or EPOCH
 
 
 def summary_for(match: Match) -> str:
