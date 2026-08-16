@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feyenoord fixtures calendar feeds</title>
+<style>
+  :root { --red:#e2001a; --ink:#111; --muted:#666; --bg:#fafafa; --card:#fff; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+         margin:0; background:var(--bg); color:var(--ink); line-height:1.5; }
+  header { background:var(--red); color:#fff; padding:2rem 1.25rem; }
+  header h1 { margin:0 0 .25rem; font-size:1.5rem; }
+  header p { margin:0; opacity:.9; }
+  main { max-width:720px; margin:0 auto; padding:1.5rem 1.25rem 3rem; }
+  .card { background:var(--card); border:1px solid #eee; border-radius:12px;
+          padding:1.1rem 1.2rem; margin:1rem 0; }
+  .card h2 { margin:0 0 .5rem; font-size:1.1rem; }
+  .btn { display:inline-block; background:var(--red); color:#fff; text-decoration:none;
+         padding:.5rem .9rem; border-radius:8px; font-weight:600; margin:.25rem .4rem .25rem 0; }
+  .btn.secondary { background:#333; }
+  code { background:#f0f0f0; padding:.15rem .35rem; border-radius:5px; font-size:.85em; word-break:break-all; }
+  .muted { color:var(--muted); font-size:.9rem; }
+  footer { text-align:center; color:var(--muted); font-size:.8rem; padding:2rem 1rem; }
+  footer p { margin:.4rem 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Feyenoord fixtures — calendar feeds</h1>
+  <p>Auto-updating calendar subscriptions. Eredivisie, Champions League and KNVB Beker.</p>
+</header>
+<main>
+  <p>Subscribe in Apple Calendar, Google Calendar, Outlook or any app that supports
+     <em>internet calendars</em>. On iPhone, iPad or Mac, tap <strong>Subscribe</strong> and
+     confirm when your calendar app asks.</p>
+
+  <div class="card">
+    <h2><span aria-hidden="true">🏟️</span> All matches</h2>
+    <p class="muted">Every Feyenoord fixture across all competitions.</p>
+    <a class="btn" href="webcal://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics">Subscribe</a>
+    <a class="btn secondary" href="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics">Copy link for Google Calendar</a>
+  </div>
+
+  <div class="card">
+    <h2><span aria-hidden="true">🔴</span> Home games only</h2>
+    <a class="btn" href="webcal://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics">Subscribe</a>
+    <a class="btn secondary" href="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics">Copy link for Google Calendar</a>
+  </div>
+
+  <div class="card">
+    <h2><span aria-hidden="true">⚪</span> Away games only</h2>
+    <a class="btn" href="webcal://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics">Subscribe</a>
+    <a class="btn secondary" href="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics">Copy link for Google Calendar</a>
+  </div>
+
+  <div class="card">
+    <h2>Using Google Calendar?</h2>
+    <p class="muted">Google can't use the Subscribe button. Open Google Calendar on a
+       computer, then <strong>Other calendars → + → From URL</strong> and paste the
+       <code>https://</code> link from the grey button above. Google refreshes external
+       calendars on its own schedule, usually every 8 to 24 hours.</p>
+  </div>
+
+  <p class="muted">All times are <code>Europe/Rotterdam</code> (CET in winter, CEST in
+     summer). Feeds are rebuilt twice a day. Fixtures with an unconfirmed kickoff appear as
+     all-day events marked “kickoff time TBD”. Cup rounds appear once the draw has been made,
+     so the KNVB Beker may be missing early in the season.</p>
+</main>
+<footer>
+  <p>Football data provided by the Football-Data.org API. KNVB Beker fixtures via ESPN.</p>
+  <p>Unofficial fan project. Not affiliated with, endorsed by, or connected to Feyenoord
+     Rotterdam, the KNVB, the Eredivisie, or UEFA.</p>
+  <p><a href="https://github.com/edwardsmit/feyenoord-calendar">Source on GitHub</a></p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,4 @@
+# RFC 5545 requires CRLF line endings, so these files must survive git
+# untouched. Without this, a clone with core.autocrlf=input rewrites them to LF
+# and the published feeds become invalid.
+*.ics -text

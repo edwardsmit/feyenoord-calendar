@@ -1,0 +1,97 @@
+name: Update Feyenoord calendars
+
+on:
+  schedule:
+    # Twice a day (UTC), so a reschedule shows up within hours.
+    - cron: "12 4 * * *"
+    - cron: "12 16 * * *"
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    # Deliberately excludes *.ics and last-run.txt: this workflow commits those,
+    # and re-triggering itself on them would loop.
+    paths:
+      - "scripts/**"
+      - ".github/workflows/update-calendars.yml"
+
+permissions:
+  contents: write # needed to commit the regenerated feeds
+
+concurrency:
+  group: update-calendars
+  cancel-in-progress: false
+
+jobs:
+  # Needs no API key, so it also works on forks and pull requests.
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Offline tests
+        run: bash scripts/run_tests.sh
+
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: test # never publish from a commit that fails the tests
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      # The `secrets` context is not available in an `if:` condition, so this
+      # has to be a normal step that reads the value from `env`.
+      - name: Check the API key is configured
+        env:
+          FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          if [ -z "${FOOTBALL_DATA_API_KEY:-}" ]; then
+            echo "::error title=Missing repository secret::FOOTBALL_DATA_API_KEY is not set."
+            {
+              echo "## Setup incomplete"
+              echo
+              echo "\`FOOTBALL_DATA_API_KEY\` is not configured, so no fixtures can be fetched."
+              echo
+              echo "1. Get a free key: <https://www.football-data.org/client/register>"
+              echo "2. \`gh secret set FOOTBALL_DATA_API_KEY --repo $REPOSITORY\`"
+              echo "3. Re-run this workflow."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+      - name: Generate .ics feeds
+        env:
+          FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
+        run: python scripts/generate_ics.py
+
+      - name: Validate generated feeds
+        run: python scripts/validate_ics.py feyenoord-home.ics feyenoord-away.ics feyenoord-all.ics
+
+      - name: Commit
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # The feeds only change when a fixture changes, which can be never for
+          # weeks. GitHub disables scheduled workflows in repositories with no
+          # activity for 60 days, so record every run to keep the cron alive.
+          date -u +%Y-%m-%dT%H:%MZ > last-run.txt
+
+          if [ -n "$(git status --porcelain -- '*.ics')" ]; then
+            message="chore: refresh Feyenoord fixtures ($(date -u +%Y-%m-%dT%H:%MZ))"
+          else
+            message="chore: heartbeat ($(date -u +%Y-%m-%dT%H:%MZ))"
+          fi
+
+          git add -A -- '*.ics' last-run.txt
+          git commit -qm "$message"
+          git push
