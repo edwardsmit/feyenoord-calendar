@@ -1,9 +1,9 @@
 # Feyenoord programma — agenda-abonnementen
 
 Gratis agenda-abonnementen voor **Feyenoord Rotterdam**, die zichzelf bijhouden. Voeg er één
-toe op je telefoon of laptop en elke wedstrijd staat gewoon in je agenda, met de aftrap al in
-`Europe/Rotterdam`. Wordt een wedstrijd verzet, dan schuift je bestaande afspraak mee — je
-krijgt er nooit een dubbele bij.
+toe op je telefoon of laptop en elke wedstrijd staat gewoon in je agenda, op Rotterdamse tijd.
+Wordt een wedstrijd verzet, dan schuift je bestaande afspraak mee — je krijgt er nooit een
+dubbele bij.
 
 Drie feeds, kies wat je wilt:
 
@@ -58,8 +58,8 @@ op zich laten wachten. Apple Agenda is een stuk sneller.
 | UEFA Champions League | Ja |
 | KNVB Beker | Ja, zodra de ronde geloot is |
 
-- Elke aftrap staat in `Europe/Rotterdam` (CET in de winter, CEST in de zomer), dus de tijden
-  kloppen waar je toestel ook staat.
+- Alle tijden zijn Rotterdamse tijd. Zomer- en wintertijd gaan vanzelf goed, en de tijden
+  kloppen ook als je toestel in het buitenland staat.
 - Titels zien eruit als `Feyenoord vs Sparta Rotterdam (Eredivisie)`, met het stadion als
   locatie.
 - Staat de aftraptijd nog niet vast, dan verschijnt de wedstrijd als **hele dag**-afspraak met
@@ -87,9 +87,8 @@ Rotterdam, de KNVB, de Eredivisie of de UEFA.
 # English
 
 Free, auto-updating calendar subscriptions for **Feyenoord Rotterdam**. Add one to your phone
-or laptop and every fixture shows up in your normal calendar, with the kickoff time already in
-`Europe/Rotterdam`. When a match is moved, your existing entry moves with it — you never get a
-duplicate.
+or laptop and every fixture shows up in your normal calendar, on Rotterdam time. When a match
+is moved, your existing entry moves with it — you never get a duplicate.
 
 | Feed | Subscribe link |
 | --- | --- |
@@ -122,7 +121,8 @@ calendars on its own schedule, usually every 8 to 24 hours.
 
 Eredivisie and UEFA Champions League in full; KNVB Beker once each round has been drawn.
 
-- Every kickoff is in `Europe/Rotterdam` (CET in winter, CEST in summer).
+- All times are Rotterdam time. Summer and winter time are handled for you, and the times are
+  still right if your device is abroad.
 - Titles read like `Feyenoord vs Sparta Rotterdam (Eredivisie)`, with the stadium as the
   location.
 - A fixture whose kickoff time isn't settled yet appears as an **all-day event** marked

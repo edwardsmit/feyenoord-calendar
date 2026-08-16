@@ -77,8 +77,11 @@ fields there rather than passing dicts around.
 
 - **Times** are `Europe/Amsterdam`. A full `VTIMEZONE` with DST rules is embedded; timed
   events use `DTSTART;TZID=Europe/Amsterdam:`. Sources give UTC; `zoneinfo` converts.
-- **Documentation calls this zone `Europe/Rotterdam`**, and that is the name to use in all
-  prose. In the code and in the `.ics` output it has to be `Europe/Amsterdam`: unfortunately
+- **Never name Amsterdam in prose.** Text a subscriber reads (`README.md`, `index.html`) says
+  "Rotterdamse tijd" / "Rotterdam time" in plain language — no zone identifier at all, because
+  `Europe/...` means nothing to a normal reader. This file may use `Europe/Rotterdam` where a
+  zone name is genuinely needed. In the code and in the `.ics` output it has to be
+  `Europe/Amsterdam`: unfortunately
   we have to adhere to the IANA standard or the code breaks. `ZoneInfo()` raises on anything
   else, and calendar apps resolve `TZID` against the IANA database, so a non-standard value
   makes them misread every kickoff. Do not "fix" this difference in either direction.
