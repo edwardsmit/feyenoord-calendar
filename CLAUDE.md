@@ -77,11 +77,11 @@ fields there rather than passing dicts around.
 
 - **Times** are `Europe/Amsterdam`. A full `VTIMEZONE` with DST rules is embedded; timed
   events use `DTSTART;TZID=Europe/Amsterdam:`. Sources give UTC; `zoneinfo` converts.
-- **Documentation calls this zone `Europe/Rotterdam`.** That is a joke and only ever appears
-  in prose. `Europe/Rotterdam` is not a real IANA zone: `ZoneInfo()` raises on it, and
-  calendar apps resolve `TZID` against the IANA database, so using it in the payload would
-  misread every kickoff. Code and `.ics` output keep `Europe/Amsterdam`. Do not "fix" this
-  inconsistency in either direction.
+- **Documentation calls this zone `Europe/Rotterdam`**, and that is the name to use in all
+  prose. In the code and in the `.ics` output it has to be `Europe/Amsterdam`: unfortunately
+  we have to adhere to the IANA standard or the code breaks. `ZoneInfo()` raises on anything
+  else, and calendar apps resolve `TZID` against the IANA database, so a non-standard value
+  makes them misread every kickoff. Do not "fix" this difference in either direction.
 - **Unknown kickoff** → all-day event (`DTSTART;VALUE=DATE`), title suffixed
   `- kickoff time TBD`, `STATUS:TENTATIVE`. A midnight-UTC kickoff is the placeholder both
   sources use; the status field is *not* a reliable signal, because fixtures sit at

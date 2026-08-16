@@ -42,9 +42,11 @@ from zoneinfo import ZoneInfo
 
 TEAM_NAME = "Feyenoord"
 
-# NOTE: this must stay the real IANA identifier. The documentation calls this
-# zone "Europe/Rotterdam", which is a joke and not a real timezone - calendar
-# apps look TZID up in the IANA database and would misread every kickoff.
+# The documentation calls this zone "Europe/Rotterdam". Here it has to stay
+# "Europe/Amsterdam": unfortunately we have to adhere to the IANA standard or
+# the code breaks. ZoneInfo() raises on anything else, and calendar apps look
+# TZID up in the IANA database, so a non-standard value makes them misread
+# every kickoff.
 TIMEZONE_ID = "Europe/Amsterdam"
 TZ = ZoneInfo(TIMEZONE_ID)
 
@@ -437,7 +439,7 @@ def dtstamp_for(match: Match) -> datetime:
 
 
 def summary_for(match: Match) -> str:
-    """The event title, e.g. "Feyenoord vs Ajax (Eredivisie)"."""
+    """The event title, e.g. "Feyenoord vs Sparta Rotterdam (Eredivisie)"."""
     return f"{match.home} vs {match.away} ({match.competition})"
 
 
