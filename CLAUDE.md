@@ -92,11 +92,28 @@ fields there rather than passing dicts around.
 - **Stable UIDs**: `fd-<matchId>@…`, `espn-<eventId>@…`. This is what makes a rescheduled
   match update its existing entry instead of duplicating. Changing the scheme orphans every
   subscriber's events.
-- **`DTSTAMP` must never come from the clock.** It is derived from the match data so that
-  identical input produces identical bytes; the workflow only commits when the files really
-  changed. A wall-clock `DTSTAMP` would produce a commit on every run forever.
-- **`SEQUENCE`** comes from the source's `lastUpdated` (minutes since epoch), so reschedules
-  bump it and clients pick up the change.
+- **`DTSTAMP`, `SEQUENCE` and `LAST-MODIFIED` are carried forward from the previous feed.**
+  Before rendering, `read_previous_revisions()` parses `feyenoord-all.ics` out of
+  `OUTPUT_DIR` and keys it by UID. If a fixture's freshly rendered body is byte-identical to
+  the published one, its three revision properties are reused untouched; only a real
+  difference moves them, and `SEQUENCE` moves by exactly `+1` so it stays monotonic as
+  RFC 5545 requires. `feyenoord-all.ics` is the single reference for all three feeds — every
+  event appears in it, and home/away must not disagree with it.
+
+  **Do not go back to deriving these from `lastUpdated`.** That was the original design and
+  it was wrong: football-data.org bulk-touches `lastUpdated` for a whole competition on its
+  own refresh cycle, whether or not the fixture changed. The tell is that 34 of 42 events
+  carried an identical stamp to the second, moving in lockstep by exactly 600 minutes
+  between runs. The result was that every run rewrote every event, `SEQUENCE` bumped twice a
+  day on fixtures nobody had touched, and in 28 consecutive runs the heartbeat path below
+  never once fired. `lastUpdated` is a clock, just someone else's — it is only trusted now
+  as the seed for a fixture's very first sighting (`seed_dtstamp`, `seed_sequence`).
+
+  Two consequences worth knowing. `render_event()` splices the properties back in at fixed
+  positions; **reordering fields there rewrites every event in every subscriber's calendar**
+  for nothing. And a missing or unparseable previous feed deliberately degrades to seeding
+  everything afresh rather than raising — the seeds are minutes-since-epoch and so always
+  larger than any carried `+1` has reached, which keeps `SEQUENCE` monotonic even then.
 - **Cancelled / postponed**: `STATUS:CANCELLED` plus a `[POSTPONED]` / `[CANCELLED]` title
   prefix, same UID.
 - Output is **CRLF** with RFC 5545 folding at **75 octets** (74 after the first line, because
@@ -118,9 +135,14 @@ python3 scripts/validate_ics.py /tmp/fey/feyenoord-*.ics
 FOOTBALL_DATA_API_KEY=xxxx python3 scripts/generate_ics.py
 ```
 
-`run_tests.sh` checks three things: output matches `scripts/expected/`, two consecutive runs
-are byte-identical, and the feeds pass the validator. **If you intentionally change the
-output, regenerate the golden files** with
+`run_tests.sh` checks five things: output matches `scripts/expected/`, two consecutive runs
+are byte-identical, the feeds pass the validator, a source-side bulk touch of every
+`lastUpdated` changes nothing, and a genuine fixture change bumps that one event's
+`SEQUENCE` by exactly 1 while the other nine stay untouched. The last two exercise the
+carry-forward path, which the first three cannot reach because they generate into empty
+directories.
+
+**If you intentionally change the output, regenerate the golden files** with
 `OUTPUT_DIR=scripts/expected FIXTURES_JSON=scripts/test_fixtures.json python3 scripts/generate_ics.py`
 and check the diff carefully — that diff is the only review the change gets.
 

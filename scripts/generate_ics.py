@@ -116,6 +116,22 @@ class Match:
     last_updated: datetime | None = None
 
 
+@dataclass
+class Revision:
+    """
+    The three properties that say "this description of the fixture changed".
+
+    They are kept apart from the fixture itself because they are not derived
+    from it: they are carried over from the previously published feed and only
+    move when something a subscriber can see has really changed. See
+    resolve_revision().
+    """
+
+    dtstamp: datetime
+    sequence: int
+    last_modified: datetime | None
+
+
 # --------------------------------------------------------------------------- #
 # Small helpers
 # --------------------------------------------------------------------------- #
@@ -148,6 +164,16 @@ def parse_iso_utc(value: str | None) -> datetime | None:
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=timezone.utc)
     return parsed.astimezone(timezone.utc)
+
+
+def format_utc(moment: datetime) -> str:
+    """Render an aware datetime as an iCalendar UTC timestamp."""
+    return moment.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+
+
+def parse_utc_stamp(value: str) -> datetime:
+    """Read an iCalendar UTC timestamp. The inverse of format_utc()."""
+    return datetime.strptime(value, "%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
 
 
 def is_feyenoord(team_name: str) -> bool:
@@ -412,28 +438,36 @@ def make_uid(match: Match) -> str:
     return f"{match.source}-{match.source_id}@{UID_DOMAIN}"
 
 
-def sequence_for(match: Match) -> int:
-    """Revision number: bumps whenever the source says the fixture changed."""
+def seed_sequence(match: Match) -> int:
+    """
+    The SEQUENCE a fixture starts at the first time it is ever published.
+
+    Minutes since the epoch, so it is comfortably larger than any value a
+    later +1 could reach - a fixture that has to fall back to this seed after
+    being carried forward for a while still moves forwards, never backwards,
+    which is what RFC 5545 requires of SEQUENCE.
+
+    After the first sighting, resolve_revision() owns this number.
+    """
     if match.last_updated is None:
         return 0
     return int(match.last_updated.timestamp() // 60)
 
 
-def dtstamp_for(match: Match) -> datetime:
+def seed_dtstamp(match: Match) -> datetime:
     """
-    When this description of the fixture was last changed.
-
-    Must NOT depend on the wall clock. The workflow only commits when the
-    generated files really differ, so a value that changed every run would
-    produce an endless stream of no-op commits and defeat caching for
-    subscribers.
+    The DTSTAMP a fixture starts at the first time it is ever published.
 
     ESPN gives no equivalent of football-data.org's lastUpdated, so cup
     fixtures fall back to a fixed constant rather than to their own kickoff
     time: a match brought forward would otherwise have its DTSTAMP move
     backwards, which a strict client may read as a stale description and
-    ignore. A constant makes no ordering claim at all. Use SEQUENCE, not
-    DTSTAMP, if cup reschedules ever need to be signalled properly.
+    ignore. A constant makes no ordering claim at all.
+
+    Note that lastUpdated is only trustworthy here, at the first sighting.
+    football-data.org bulk-touches it for a whole competition on a refresh
+    cycle, so on its own it says nothing about whether the fixture changed.
+    resolve_revision() is what decides that.
     """
     return match.last_updated or EPOCH
 
@@ -466,17 +500,19 @@ END:STANDARD
 END:VTIMEZONE""".split("\n")
 
 
-def render_event(match: Match) -> list[str]:
-    """Render one fixture as the lines of a VEVENT."""
+def event_body(match: Match) -> list[str]:
+    """
+    Render one fixture as the lines of a VEVENT, minus its revision properties.
+
+    This is everything that describes the match itself. Comparing it against
+    the previously published feed is what tells us whether anything a
+    subscriber can see has actually changed; render_event() then puts DTSTAMP,
+    SEQUENCE and LAST-MODIFIED back.
+    """
     lines = [
         "BEGIN:VEVENT",
         f"UID:{make_uid(match)}",
-        f"DTSTAMP:{dtstamp_for(match).strftime('%Y%m%dT%H%M%SZ')}",
     ]
-
-    sequence = sequence_for(match)
-    if sequence:
-        lines.append(f"SEQUENCE:{sequence}")
 
     if match.start_utc is not None and match.time_confirmed:
         starts = match.start_utc.astimezone(TZ)
@@ -509,14 +545,34 @@ def render_event(match: Match) -> list[str]:
     lines.append("DESCRIPTION:" + escape_text(
         f"{match.competition} - {home_or_away} match vs {match.opponent}"))
     lines.append(f"CATEGORIES:{escape_text(match.competition)}")
-    if match.last_updated:
-        lines.append(f"LAST-MODIFIED:{match.last_updated.strftime('%Y%m%dT%H%M%SZ')}")
     lines.append("TRANSP:TRANSPARENT")
     lines.append("END:VEVENT")
     return lines
 
 
-def render_calendar(name: str, matches: list[Match]) -> str:
+def render_event(body: list[str], revision: Revision) -> list[str]:
+    """
+    Put the revision properties back into a body from event_body().
+
+    They go exactly where they have always sat in the published feeds:
+    DTSTAMP and SEQUENCE straight after UID, LAST-MODIFIED just before TRANSP.
+    Moving them would rewrite every event in every subscriber's calendar for
+    no reason, so keep this order.
+    """
+    lines = list(body)
+
+    stamps = [f"DTSTAMP:{format_utc(revision.dtstamp)}"]
+    if revision.sequence:
+        stamps.append(f"SEQUENCE:{revision.sequence}")
+    lines[2:2] = stamps  # after BEGIN:VEVENT and UID
+
+    if revision.last_modified:
+        lines.insert(lines.index("TRANSP:TRANSPARENT"),
+                     f"LAST-MODIFIED:{format_utc(revision.last_modified)}")
+    return lines
+
+
+def render_calendar(name: str, events: list[list[str]]) -> str:
     """Render a whole calendar file. Output uses CRLF, as RFC 5545 requires."""
     lines = [
         "BEGIN:VCALENDAR",
@@ -531,10 +587,118 @@ def render_calendar(name: str, matches: list[Match]) -> str:
         f"REFRESH-INTERVAL;VALUE=DURATION:PT{REFRESH_HOURS}H",
     ]
     lines += VTIMEZONE
-    for match in matches:
-        lines += render_event(match)
+    for event_lines in events:
+        lines += event_lines
     lines.append("END:VCALENDAR")
     return "\r\n".join(fold_line(line) for line in lines) + "\r\n"
+
+
+# --------------------------------------------------------------------------- #
+# Carrying revisions forward
+# --------------------------------------------------------------------------- #
+
+def unfold_lines(text: str) -> list[str]:
+    """Undo RFC 5545 folding: a line starting with a space continues the one
+    before it. The inverse of fold_line()."""
+    lines: list[str] = []
+    for raw in text.split("\r\n"):
+        if raw.startswith(" ") and lines:
+            lines[-1] += raw[1:]
+        else:
+            lines.append(raw)
+    return lines
+
+
+def parse_previous_event(lines: list[str]) -> tuple[str, Revision, tuple[str, ...]] | None:
+    """Split one published VEVENT into its UID, its revision and its body."""
+    uid = None
+    dtstamp = None
+    sequence = 0
+    last_modified = None
+    body = []
+
+    for line in lines:
+        name, _, value = line.partition(":")
+        if name == "DTSTAMP":
+            dtstamp = parse_utc_stamp(value)
+        elif name == "SEQUENCE":
+            sequence = int(value)
+        elif name == "LAST-MODIFIED":
+            last_modified = parse_utc_stamp(value)
+        else:
+            if name == "UID":
+                uid = value
+            body.append(line)
+
+    if uid is None or dtstamp is None:
+        return None
+    return uid, Revision(dtstamp, sequence, last_modified), tuple(body)
+
+
+def read_previous_revisions(path: str) -> dict[str, tuple[Revision, tuple[str, ...]]]:
+    """
+    Read the feed published last time, keyed by UID.
+
+    A missing or unreadable file gives an empty result, which makes every
+    fixture look brand new and the generator behave exactly as it did before
+    any feed existed. That fallback must never raise: the feeds have to build
+    even if the previous output was truncated or hand-edited.
+    """
+    try:
+        with open(path, encoding="utf-8", newline="") as handle:
+            text = handle.read()
+    except OSError:
+        return {}
+
+    previous: dict[str, tuple[Revision, tuple[str, ...]]] = {}
+    current: list[str] | None = None
+    try:
+        for line in unfold_lines(text):
+            if line == "BEGIN:VEVENT":
+                current = [line]
+            elif current is None:
+                continue
+            elif line == "END:VEVENT":
+                current.append(line)
+                parsed = parse_previous_event(current)
+                if parsed:
+                    uid, revision, body = parsed
+                    previous[uid] = (revision, body)
+                current = None
+            else:
+                current.append(line)
+    except ValueError:
+        return {}
+    return previous
+
+
+def resolve_revision(match: Match,
+                     body: list[str],
+                     previous: dict[str, tuple[Revision, tuple[str, ...]]]) -> Revision:
+    """
+    Decide the revision properties for one fixture.
+
+    football-data.org's lastUpdated cannot carry this on its own: it
+    bulk-touches every fixture in a competition on a refresh cycle, so it
+    moves whether or not the fixture changed. Left to itself it rewrote all
+    42 events twice a day and made SEQUENCE meaningless as a change signal.
+
+    Comparing against what was actually published last time fixes that.
+    SEQUENCE only ever moves by +1, and only when a subscriber-visible detail
+    differs, so it stays monotonic as RFC 5545 requires.
+    """
+    old = previous.get(make_uid(match))
+    if old is None:
+        return Revision(seed_dtstamp(match), seed_sequence(match), match.last_updated)
+
+    old_revision, old_body = old
+    if old_body == tuple(body):
+        return old_revision
+
+    # Prefer the source's own idea of when it changed; fall back to now for
+    # cup fixtures, where ESPN offers nothing equivalent.
+    changed_at = match.last_updated or datetime.now(timezone.utc).replace(microsecond=0)
+    return Revision(changed_at, old_revision.sequence + 1, changed_at)
 
 
 # --------------------------------------------------------------------------- #
@@ -616,6 +780,26 @@ def main() -> None:
     out_dir = os.environ.get("OUTPUT_DIR", ".")
     matches, notes = load_matches()
 
+    # Every fixture appears in the "all" feed, so it is the one reference for
+    # what was published last time. Resolving revisions once, here, is also
+    # what keeps the three files from disagreeing about the same event.
+    previous = read_previous_revisions(os.path.join(out_dir, "feyenoord-all.ics"))
+    events = {}
+    first_seen = 0
+    changed = 0
+    unchanged = 0
+    for match in matches:
+        body = event_body(match)
+        revision = resolve_revision(match, body, previous)
+        uid = make_uid(match)
+        if uid not in previous:
+            first_seen += 1
+        elif revision == previous[uid][0]:
+            unchanged += 1
+        else:
+            changed += 1
+        events[uid] = render_event(body, revision)
+
     home_matches = [match for match in matches if match.is_home]
     away_matches = [match for match in matches if not match.is_home]
 
@@ -626,9 +810,13 @@ def main() -> None:
     }
     for filename, (calendar_name, feed_matches) in feeds.items():
         path = os.path.join(out_dir, filename)
+        feed_events = [events[make_uid(match)] for match in feed_matches]
         with open(path, "w", encoding="utf-8", newline="") as handle:
-            handle.write(render_calendar(calendar_name, feed_matches))
+            handle.write(render_calendar(calendar_name, feed_events))
         print(f"Wrote {path}: {len(feed_matches)} events", file=sys.stderr)
+
+    notes.append(f"Revisions: {first_seen} new, {changed} changed, "
+                 f"{unchanged} carried forward unchanged.")
 
     print("\n=== Run notes ===", file=sys.stderr)
     for note in notes:
