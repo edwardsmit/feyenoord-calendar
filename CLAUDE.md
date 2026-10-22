@@ -61,12 +61,18 @@ failure must only produce a logged warning. **Never let the cup source break the
 Cup rounds appear only after the draw, so an empty cup result early in the season is normal
 and is logged differently from an outright failure.
 
+It has already changed once: from 2026-09-15 the scoreboard answers a date range
+(`dates=YYYYMMDD-YYYYMMDD`) with HTTP 400, even for ten days. A single day, a month
+(`YYYYMM`) and a whole year (`YYYY`) still work, and a year returns exactly what its twelve
+months do. The script therefore asks for both calendar years the season spans and keeps only
+fixtures between 1 July and 30 June — the first year also holds last season's spring rounds.
+
 ## How generation works
 
 1. `FIXTURES_JSON` set → load matches from that file, no network (this is how the tests run).
 2. Otherwise fetch `/teams/675/matches` from football-data.org.
-3. Best effort: fetch the season's `ned.cup` scoreboard from ESPN, keep fixtures involving
-   Feyenoord.
+3. Best effort: fetch the `ned.cup` scoreboard from ESPN for both years the season spans,
+   keep in-season fixtures involving Feyenoord.
 4. Merge, de-duplicating on `(date, both team names)`; football-data.org wins.
 5. Split into home / away / all and render each to `.ics` in `OUTPUT_DIR` (default `.`).
 
