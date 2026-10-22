@@ -16,6 +16,7 @@ on:
 
 permissions:
   contents: write # needed to commit the regenerated feeds
+  issues: write # needed to open and close the cup source alert
 
 concurrency:
   group: update-calendars
@@ -69,6 +70,7 @@ jobs:
           fi
 
       - name: Generate .ics feeds
+        id: generate
         env:
           FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
         run: python scripts/generate_ics.py
@@ -95,3 +97,38 @@ jobs:
           git add -A -- '*.ics' last-run.txt
           git commit -qm "$message"
           git push
+
+      # A cup failure never fails the run, so GitHub never emails about it.
+      # Instead, keep one issue open for as long as the source is down: the
+      # notifications for opening and closing it are the alert. Runs in
+      # between stay silent, so it is two emails per outage, not two a day.
+      - name: Track cup source health
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CUP_FAILED: ${{ steps.generate.outputs.cup_failed }}
+          CUP_PROBLEM: ${{ steps.generate.outputs.cup_problem }}
+          OWNER: ${{ github.repository_owner }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          label="source-down"
+          open_issue=$(gh issue list --label "$label" --state open \
+                         --json number --jq '.[0].number // empty')
+
+          if [ "$CUP_FAILED" = "true" ] && [ -z "$open_issue" ]; then
+            gh label create "$label" --force --color d73a4a \
+              --description "A fixture source is failing"
+            # The mention makes sure the owner is notified, whatever their
+            # watch settings for this repository are.
+            body=$(printf '%s\n' \
+              "@$OWNER the ESPN cup fetch failed, so the feeds are being published without KNVB Beker fixtures." \
+              "" \
+              "Error: \`$CUP_PROBLEM\`" \
+              "" \
+              "First failing run: $RUN_URL" \
+              "" \
+              "This issue closes itself on the first run where the source works again.")
+            gh issue create --label "$label" \
+              --title "KNVB Beker source (ESPN) is failing" --body "$body"
+          elif [ "$CUP_FAILED" != "true" ] && [ -n "$open_issue" ]; then
+            gh issue close "$open_issue" --comment "The cup source works again as of $RUN_URL"
+          fi
