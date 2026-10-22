@@ -193,15 +193,15 @@ def has_placeholder_kickoff(start_utc: datetime | None) -> bool:
     return start_utc.hour == 0 and start_utc.minute == 0
 
 
-def season_date_range(today: date) -> tuple[str, str]:
+def season_bounds(today: date) -> tuple[date, date]:
     """
-    The current season as an ESPN date range, e.g. ("20260701", "20270630").
+    First and last day of the current season, e.g. 2026-07-01 and 2027-06-30.
 
     A European football season starts in July, so anything before July belongs
     to the season that started the previous year.
     """
     start_year = today.year if today.month >= 7 else today.year - 1
-    return f"{start_year}0701", f"{start_year + 1}0630"
+    return date(start_year, 7, 1), date(start_year + 1, 6, 30)
 
 
 # --------------------------------------------------------------------------- #
@@ -300,11 +300,19 @@ def fetch_espn_cup(today: date) -> list[Match]:
     fills that gap. Returns an empty list when the rounds Feyenoord play in
     have not been drawn yet, which is normal early in the season.
     """
-    season_start, season_end = season_date_range(today)
-    payload = http_get_json(
-        f"{ESPN_BASE}/ned.cup/scoreboard?dates={season_start}-{season_end}")
-
-    events = payload.get("events") or []
+    # ESPN stopped accepting a date range (YYYYMMDD-YYYYMMDD) in September
+    # 2026 and answers it with HTTP 400. A whole calendar year still works, so
+    # ask for both years the season spans and drop what falls outside it:
+    # the first year also holds last season's spring rounds.
+    season_start, season_end = season_bounds(today)
+    events = []
+    for year in (season_start.year, season_end.year):
+        payload = http_get_json(
+            f"{ESPN_BASE}/ned.cup/scoreboard?dates={year}&limit=1000")
+        for event in payload.get("events") or []:
+            kickoff = parse_iso_utc(event.get("date"))
+            if kickoff is None or season_start <= kickoff.date() <= season_end:
+                events.append(event)
     print(f"ESPN: {len(events)} KNVB Beker fixtures published this season",
           file=sys.stderr)
 
