@@ -16,7 +16,9 @@ football-data.org  (required)  Eredivisie + Champions League.
 ESPN               (optional)  KNVB Beker only. No API key needed. This is an
                                undocumented endpoint, so every failure here is
                                logged and ignored: the feeds must still build
-                               from football-data.org alone.
+                               from football-data.org alone. In GitHub Actions
+                               a failure is also reported through GITHUB_OUTPUT
+                               so the workflow can open an alert issue.
 
 Offline mode
 ------------
@@ -737,15 +739,20 @@ def load_from_file(path: str) -> list[Match]:
     return matches
 
 
-def load_matches() -> tuple[list[Match], list[str]]:
-    """Get every fixture, plus notes about what each source contributed."""
+def load_matches() -> tuple[list[Match], list[str], str | None]:
+    """
+    Get every fixture, plus notes about what each source contributed.
+
+    The third value is the error text when the cup source failed, and None
+    when it worked. The workflow uses it to open or close an alert issue.
+    """
     notes: list[str] = []
 
     fixtures_json = os.environ.get("FIXTURES_JSON")
     if fixtures_json:
         matches = load_from_file(fixtures_json)
         notes.append(f"Offline mode: {len(matches)} matches from {fixtures_json}.")
-        return merge(matches, []), notes
+        return merge(matches, []), notes, None
 
     api_key = os.environ.get("FOOTBALL_DATA_API_KEY")
     if not api_key:
@@ -758,6 +765,7 @@ def load_matches() -> tuple[list[Match], list[str]]:
 
     # Best effort. The cup is a bonus; never let it break the build.
     cup: list[Match] = []
+    cup_problem = None
     try:
         cup = fetch_espn_cup(datetime.now(timezone.utc).date())
         if cup:
@@ -766,10 +774,29 @@ def load_matches() -> tuple[list[Match], list[str]]:
             notes.append("ESPN: no KNVB Beker match for Feyenoord yet "
                          "(rounds they enter may not be drawn).")
     except Exception as error:
+        cup_problem = str(error)
         notes.append(f"ESPN unavailable ({error}); KNVB Beker not included this run.")
-        print(f"WARN: ESPN cup fetch failed: {error}", file=sys.stderr)
+        # A GitHub Actions annotation, so the failure shows on the run's
+        # summary page instead of only deep in the log.
+        print(f"::warning title=KNVB Beker source failed::{error}")
 
-    return merge(league_and_europe, cup), notes
+    return merge(league_and_europe, cup), notes, cup_problem
+
+
+def write_step_outputs(values: dict[str, str]) -> None:
+    """
+    Hand values to later workflow steps through the GITHUB_OUTPUT file.
+
+    Does nothing outside GitHub Actions. Newlines are replaced because each
+    output has to fit on one key=value line.
+    """
+    output_path = os.environ.get("GITHUB_OUTPUT")
+    if not output_path:
+        return
+    with open(output_path, "a", encoding="utf-8") as handle:
+        for key, value in values.items():
+            single_line = value.replace("\r", " ").replace("\n", " ")
+            handle.write(f"{key}={single_line}\n")
 
 
 # --------------------------------------------------------------------------- #
@@ -778,7 +805,11 @@ def load_matches() -> tuple[list[Match], list[str]]:
 
 def main() -> None:
     out_dir = os.environ.get("OUTPUT_DIR", ".")
-    matches, notes = load_matches()
+    matches, notes, cup_problem = load_matches()
+    write_step_outputs({
+        "cup_failed": "true" if cup_problem else "false",
+        "cup_problem": cup_problem or "",
+    })
 
     # Every fixture appears in the "all" feed, so it is the one reference for
     # what was published last time. Resolving revisions once, here, is also

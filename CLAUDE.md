@@ -155,7 +155,8 @@ are defined.
 `.github/workflows/update-calendars.yml` runs on cron (04:12 and 16:12 UTC), on manual
 dispatch, and on pushes touching `scripts/**` or the workflow itself. The `test` job runs the
 offline suite and gates the `build` job, which checks the secret is present, generates,
-validates, and commits. `permissions: contents: write` and a `concurrency` group are required.
+validates, and commits. `permissions: contents: write` and `issues: write` and a `concurrency`
+group are required.
 
 The push trigger deliberately excludes `*.ics` and `last-run.txt` — the workflow commits
 those, and including them would loop.
@@ -166,6 +167,18 @@ GitHub disables scheduled workflows in public repositories after 60 days without
 and the Dutch off-season can easily be that quiet now that `DTSTAMP` is stable. Every run
 therefore writes `last-run.txt` and commits it, so there is always activity. The commit
 message says `refresh` when a fixture actually changed and `heartbeat` when nothing did.
+
+### Alerting on a failing cup source
+
+A failed run emails the owner through GitHub's own notifications, but a cup failure never
+fails the run, so on its own it is silent: from 2026-09-15 ESPN rejected every request for
+five weeks and only the log knew. `generate_ics.py` therefore reports `cup_failed` and
+`cup_problem` through `GITHUB_OUTPUT`, and the last step of the `build` job keeps exactly one
+issue labelled `source-down` open while the source fails. It opens the issue on the first
+failing run, mentions the owner so the notification lands whatever the watch settings, and
+closes it on the first healthy run. Runs in between leave it alone — **don't add a comment per
+failing run**, every comment is another email. The step runs after the push, so a problem
+with the issue itself can never hold back the feeds.
 
 ## Setting it up from scratch
 
