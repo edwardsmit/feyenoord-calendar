@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feyenoord fixtures in your calendar — free and always up to date</title>
+<meta name="description" content="Add every Feyenoord fixture to your calendar on iPhone, Android or Outlook, for free. Rescheduled matches move with it automatically.">
+<link rel="alternate" hreflang="nl" href="https://edwardsmit.github.io/feyenoord-calendar/">
+<link rel="alternate" hreflang="en" href="https://edwardsmit.github.io/feyenoord-calendar/en/">
+<link rel="alternate" hreflang="x-default" href="https://edwardsmit.github.io/feyenoord-calendar/">
+<link rel="preload" href="../assets/fonts/hanken-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-feed-base="../">
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="../">010 Agenda</a>
+    <nav class="lang" aria-label="Taal / Language">
+      <a href="../" hreflang="nl" lang="nl">NL</a>
+      <span aria-current="true">EN</span>
+    </nav>
+  </div>
+
+  <main class="hero">
+    <div>
+      <div class="intro">
+        <h1>Every Feyenoord fixture in your own calendar</h1>
+        <p class="lede">Set it up once. After that your calendar keeps itself up to date, even when a match is moved.</p>
+      </div>
+
+      <ol class="steps">
+        <li class="step">
+          <div class="step-number" aria-hidden="true"></div>
+          <div class="step-body">
+            <h2>Choose how you want to see it</h2>
+            <div class="choice" role="group" aria-label="Colours">
+              <button type="button" data-option="two"><i class="swatch home"></i><i class="swatch away"></i>Home and away apart</button>
+              <button type="button" data-option="one"><i class="swatch all"></i>Everything in one</button>
+            </div>
+            <p data-result="two">You get <strong>two calendars</strong>, Home and Away, each in its own colour.</p>
+            <p data-result="one" hidden>You get <strong>one calendar</strong> with every match. Don't add Home or Away as well, or every match shows up twice.</p>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="step-number" aria-hidden="true"></div>
+          <div class="step-body">
+            <h2>Add it to your calendar</h2>
+            <div class="device">
+              <div class="tabs" role="tablist" aria-label="Calendar app">
+                <button type="button" role="tab" data-tab="apple">iPhone / Mac</button>
+                <button type="button" role="tab" data-tab="google">Android / Google</button>
+                <button type="button" role="tab" data-tab="outlook">Outlook</button>
+              </div>
+
+              <div class="panel" data-panel="apple">
+                <div class="subscribe" data-result="two">
+                  <a data-feed="feyenoord-home.ics" href="webcal://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics"><i class="swatch home"></i>Subscribe to Home</a>
+                  <a data-feed="feyenoord-away.ics" href="webcal://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics"><i class="swatch away"></i>Subscribe to Away</a>
+                </div>
+                <div class="subscribe" data-result="one" hidden>
+                  <a data-feed="feyenoord-all.ics" href="webcal://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics"><i class="swatch all"></i>Subscribe to All</a>
+                </div>
+                <p class="note">Your calendar asks whether to subscribe. Tap <strong>Subscribe</strong>.</p>
+              </div>
+
+              <div class="panel" data-panel="google" hidden>
+                <ol>
+                  <li>Copy the link below.</li>
+                  <li>Open <strong>calendar.google.com</strong> on a computer. The phone app can't do this.</li>
+                  <li>Choose <strong>Other calendars → + → From URL</strong> and paste the link.</li>
+                </ol>
+                <div class="copy" data-result="two">
+                  <span class="copy-name"><i class="swatch home"></i>Home</span><code data-feed="feyenoord-home.ics">https://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics</code><button type="button" data-feed="feyenoord-home.ics" data-copy="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics">Copy</button>
+                  <span class="copy-name"><i class="swatch away"></i>Away</span><code data-feed="feyenoord-away.ics">https://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics</code><button type="button" data-feed="feyenoord-away.ics" data-copy="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics">Copy</button>
+                </div>
+                <div class="copy" data-result="one" hidden>
+                  <span class="copy-name"><i class="swatch all"></i>All</span><code data-feed="feyenoord-all.ics">https://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics</code><button type="button" data-feed="feyenoord-all.ics" data-copy="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics">Copy</button>
+                </div>
+                <p class="note">Google refreshes every 8 to 24 hours. After that it shows up on your Android phone too.</p>
+              </div>
+
+              <div class="panel" data-panel="outlook" hidden>
+                <ol>
+                  <li>Copy the link below.</li>
+                  <li>Choose <strong>Add calendar → Subscribe from web</strong>.</li>
+                  <li>Paste the link, give it a name and click <strong>Import</strong>.</li>
+                </ol>
+                <div class="copy" data-result="two">
+                  <span class="copy-name"><i class="swatch home"></i>Home</span><code data-feed="feyenoord-home.ics">https://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics</code><button type="button" data-feed="feyenoord-home.ics" data-copy="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics">Copy</button>
+                  <span class="copy-name"><i class="swatch away"></i>Away</span><code data-feed="feyenoord-away.ics">https://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics</code><button type="button" data-feed="feyenoord-away.ics" data-copy="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics">Copy</button>
+                </div>
+                <div class="copy" data-result="one" hidden>
+                  <span class="copy-name"><i class="swatch all"></i>All</span><code data-feed="feyenoord-all.ics">https://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics</code><button type="button" data-feed="feyenoord-all.ics" data-copy="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics">Copy</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="step-number" aria-hidden="true"></div>
+          <div class="step-body">
+            <h2 data-result="two">Give each calendar a colour</h2>
+            <p data-result="two">Open the list of calendars in your calendar app and pick, say, red for Home and grey for Away. You never have to do anything again.</p>
+            <h2 data-result="one" hidden>Done</h2>
+            <p data-result="one" hidden>You never have to do anything again. New and rescheduled matches appear by themselves.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <aside class="preview" aria-label="Preview of your calendar">
+      <div class="phone" data-view="two">
+        <div class="screen">
+          <div class="screen-head"><small data-range>Upcoming matches</small><strong>Calendar</strong></div>
+          <div class="events" data-events>
+            <div class="placeholder"></div><div class="placeholder"></div><div class="placeholder"></div>
+            <div class="placeholder"></div><div class="placeholder"></div>
+          </div>
+        </div>
+      </div>
+      <div class="legend" data-result="two"><span><i class="swatch home"></i>Home</span><span><i class="swatch away"></i>Away</span></div>
+      <div class="legend" data-result="one" hidden><span><i class="swatch all"></i>All matches</span></div>
+    </aside>
+  </main>
+
+  <section class="facts" aria-label="Good to know">
+    <div><h3>Moved? It moves too.</h3><p>A rescheduled match moves in your calendar, without ever creating a duplicate. If the kickoff time isn't set yet, you see an all-day event.</p></div>
+    <div><h3>Rotterdam time</h3><p>Summer and winter time are handled for you, and kickoff times stay right when you are abroad.</p></div>
+    <div><h3>Every competition</h3><p>Eredivisie and Champions League, plus the KNVB Beker once each round is drawn. Updated twice a day.</p></div>
+  </section>
+
+  <footer>
+    <p>Football data provided by the Football-Data.org API. KNVB Beker fixtures via ESPN.</p>
+    <p>Unofficial fan project. Not affiliated with, endorsed by, or connected to Feyenoord Rotterdam, the KNVB, the Eredivisie, or UEFA.</p>
+    <p><a href="https://github.com/edwardsmit/feyenoord-calendar">GitHub</a></p>
+  </footer>
+</div>
+<script src="../assets/site.js"></script>
+</body>
+</html>
