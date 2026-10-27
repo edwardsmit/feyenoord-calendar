@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Written by scripts/generate_ics.py. lastmod only moves when the text
+     a visitor can read on that page changes; the fingerprint is how it knows. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://legioenagenda.nl/</loc>
+    <lastmod>2026-10-27</lastmod>
+    <!-- visible-text: 5ec9433cb33ad1b1 -->
     <xhtml:link rel="alternate" hreflang="nl" href="https://legioenagenda.nl/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legioenagenda.nl/en/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://legioenagenda.nl/"/>
   </url>
   <url>
     <loc>https://legioenagenda.nl/en/</loc>
+    <lastmod>2026-10-27</lastmod>
+    <!-- visible-text: 3c80d613900283fa -->
     <xhtml:link rel="alternate" hreflang="nl" href="https://legioenagenda.nl/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://legioenagenda.nl/en/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://legioenagenda.nl/"/>
