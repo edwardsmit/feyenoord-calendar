@@ -253,6 +253,12 @@ slot.
 **`UID_DOMAIN` in `generate_ics.py` keeps the old `github.io` name.** It is only an identifier,
 not a URL, and changing it would orphan every subscriber's events.
 
+**The repository stays named `feyenoord-calendar` (decided 2026-10-27).** GitHub redirects a
+renamed repo's git and web URLs, but not its Pages project URL. Everyone who subscribed before
+the domain move uses `edwardsmit.github.io/feyenoord-calendar/…`, which only redirects
+because it belongs to this repo. After a rename those subscriptions would 404, and calendar
+apps fail silently, so supporters would be left with stale fixtures.
+
 The API key lives only in Actions secrets — football-data.org's terms forbid keeping
 credentials in an open-source repository, so this is deliberate.
 
