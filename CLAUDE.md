@@ -245,8 +245,11 @@ languages.
 
 - **No `FAQPage` markup.** Google stopped showing FAQ rich results for sites like this one in
   2023, so it would be dead weight.
-- **`SportsEvent` data covers exactly the listed fixtures**, because Google wants
-  structured data to match what the page shows. It sits between the `upcoming-data` markers.
+- **`SportsEvent` data covers only the listed home fixtures.** Google wants structured data to
+  match what the page shows, and rejects an event whose `location` has no address.
+  football-data.org's free tier carries no venue at all, so home fixtures get De Kuip's address
+  (`HOME_GROUND` in `landing_page.py`) and away fixtures are left out. It sits between the
+  `upcoming-data` markers.
 - **`<lastmod>` only moves when the visible text changes.** `sitemap.xml` is written whole
   by the generator. Next to each `lastmod` it keeps a fingerprint of the page's visible text
   (body text outside scripts, styles and templates, whitespace collapsed). A run that leaves

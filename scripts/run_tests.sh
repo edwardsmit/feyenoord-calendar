@@ -130,8 +130,8 @@ diff -r "$first" "$carried"
 echo "    ok: no change in, no change out"
 
 echo "==> A change nobody can see must not move lastmod"
-# The venue is in the feed and in the structured data, but not in the text
-# of the page. Search engines are told about visible changes only.
+# The venue is in the feed, but not in the text of the page. Search engines
+# are told about visible changes only.
 cp -R "$first/." "$venue/"
 python3 - "$FIXTURES" "$scratch/venue.json" <<'PY'
 import json, sys
@@ -145,12 +145,27 @@ json.dump(matches, open(target, "w"), indent=2)
 PY
 
 TODAY="$NEXT_DAY" OUTPUT_DIR="$venue" FIXTURES_JSON="$scratch/venue.json" python3 scripts/generate_ics.py 2>/dev/null
-if diff -q "$first/index.html" "$venue/index.html" >/dev/null; then
-  echo "    the venue should have changed the structured data" >&2
+if diff -q "$first/feyenoord-all.ics" "$venue/feyenoord-all.ics" >/dev/null; then
+  echo "    the venue should have changed the feed" >&2
   exit 1
 fi
 expect_lastmod "$venue" "$FIRST_DAY"
-echo "    ok: structured data changed, lastmod did not"
+echo "    ok: feed changed, lastmod did not"
+
+# Markup, attributes and structured data are not text a visitor reads.
+python3 - "$first/index.html" <<'PY'
+import sys
+sys.path.insert(0, "scripts")
+from landing_page import visible_fingerprint
+
+page = open(sys.argv[1], encoding="utf-8").read()
+restyled = page.replace('class="event home"', 'class="event home highlighted"')
+recoded = page.replace('"sport": "Football"', '"sport": "Soccer"')
+assert restyled != page and recoded != page, "the test edits no longer apply"
+assert visible_fingerprint(restyled) == visible_fingerprint(page), "a class change moved the fingerprint"
+assert visible_fingerprint(recoded) == visible_fingerprint(page), "structured data moved the fingerprint"
+PY
+echo "    ok: markup and structured data do not count"
 
 echo "==> A real change must bump only that event's SEQUENCE"
 python3 - "$FIXTURES" "$scratch/moved.json" <<'PY'
