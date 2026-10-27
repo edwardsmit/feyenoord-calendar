@@ -22,7 +22,9 @@ Live at `https://edwardsmit.github.io/feyenoord-calendar/<file>.ics`.
 ├── CLAUDE.md
 ├── README.md                  # for subscribers: what it is, how to add it
 ├── LICENSE                    # MIT, code only
-├── index.html                 # Pages landing page
+├── index.html                 # Pages landing page (Dutch)
+├── en/index.html              # the same page in English
+├── assets/                    # shared CSS, JS and the self-hosted font (OFL)
 ├── feyenoord-*.ics            # generated feeds (committed)
 ├── last-run.txt               # heartbeat, see "Keeping the cron alive"
 ├── .github/workflows/update-calendars.yml
@@ -185,6 +187,27 @@ failing run, mentions the owner so the notification lands whatever the watch set
 closes it on the first healthy run. Runs in between leave it alone — **don't add a comment per
 failing run**, every comment is another email. The step runs after the push, so a problem
 with the issue itself can never hold back the feeds.
+
+## The landing page
+
+`index.html` (Dutch) and `en/index.html` (English) are two static pages with the same markup,
+sharing `assets/site.css` and `assets/site.js`. They are separate pages rather than a JS toggle,
+so search engines index both languages. Change one, change the other.
+
+The page walks a visitor through three numbered steps: one calendar or two (Alles, or Thuis +
+Uit in their own colours), then their calendar app (preselected from the user agent), then
+colours. Never offer Alles together with Thuis/Uit — that duplicates every match.
+
+- **Feed links follow the host.** `site.js` rewrites every `data-feed` link from the page's
+  own URL, so they keep working under a custom domain. The hardcoded `github.io` hrefs are
+  only the no-JS fallback.
+- **The phone preview reads `feyenoord-all.ics`.** It relies on `DESCRIPTION` reading
+  `<competition> - Home|Away match vs <opponent>` and on `STATUS:CANCELLED`. Changing that
+  text in `event_body()` breaks the preview silently (it shows nothing), so update
+  `parseCalendar()`/`renderPreview()` with it.
+- **The font is self-hosted** (`assets/fonts/`, SIL OFL, licence alongside). Loading it from
+  Google Fonts would send every visitor's IP to Google, which needs consent in the EU.
+- No club crest, club typeface or photos. "Feyenoord" appears only as a description.
 
 ## Setting it up from scratch
 

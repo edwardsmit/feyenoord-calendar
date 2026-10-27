@@ -2,178 +2,141 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Feyenoord programma — agenda-abonnementen</title>
-<style>
-  :root { --red:#e2001a; --ink:#111; --muted:#666; --bg:#fafafa; --card:#fff; }
-  * { box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-         margin:0; background:var(--bg); color:var(--ink); line-height:1.5; }
-  header { background:var(--red); color:#fff; padding:2rem 1.25rem; position:relative; }
-  header h1 { margin:0 0 .25rem; font-size:1.5rem; padding-right:7rem; }
-  header p { margin:0; opacity:.9; padding-right:7rem; }
-  main { max-width:720px; margin:0 auto; padding:1.5rem 1.25rem 3rem; }
-  .card { background:var(--card); border:1px solid #eee; border-radius:12px;
-          padding:1.1rem 1.2rem; margin:1rem 0; }
-  .card h2 { margin:0 0 .5rem; font-size:1.1rem; }
-  .btn { display:inline-block; background:var(--red); color:#fff; text-decoration:none;
-         padding:.5rem .9rem; border-radius:8px; font-weight:600; margin:.25rem .4rem .25rem 0; }
-  .btn.secondary { background:#333; }
-  code { background:#f0f0f0; padding:.15rem .35rem; border-radius:5px; font-size:.85em; word-break:break-all; }
-  .muted { color:var(--muted); font-size:.9rem; }
-  footer { text-align:center; color:var(--muted); font-size:.8rem; padding:2rem 1rem; }
-  footer p { margin:.4rem 0; }
-  /* Language switch */
-  .lang-switch { position:absolute; top:1.1rem; right:1.25rem; display:flex; gap:.35rem;
-                 background:rgba(0,0,0,.18); border-radius:999px; padding:.2rem; }
-  .lang-switch button { font:inherit; font-size:.85rem; color:#fff; background:transparent;
-                        border:0; border-radius:999px; padding:.3rem .6rem; cursor:pointer;
-                        display:flex; align-items:center; gap:.35rem; }
-  .lang-switch button[aria-pressed="true"] { background:#fff; color:var(--red); font-weight:600; }
-  .lang-switch .flag { font-size:1.05em; line-height:1; }
-  [hidden] { display:none !important; }
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feyenoord programma in je agenda — gratis en altijd actueel</title>
+<meta name="description" content="Zet het complete programma van Feyenoord gratis in je agenda op iPhone, Android of Outlook. Verzette wedstrijden schuiven vanzelf mee.">
+<link rel="alternate" hreflang="nl" href="https://edwardsmit.github.io/feyenoord-calendar/">
+<link rel="alternate" hreflang="en" href="https://edwardsmit.github.io/feyenoord-calendar/en/">
+<link rel="alternate" hreflang="x-default" href="https://edwardsmit.github.io/feyenoord-calendar/">
+<link rel="preload" href="assets/fonts/hanken-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
 </head>
-<body>
-<header>
-  <div class="lang-switch" role="group" aria-label="Taal / Language">
-    <button type="button" id="btn-nl" aria-pressed="true" lang="nl">
-      <span class="flag" aria-hidden="true">🇳🇱</span> Nederlands
-    </button>
-    <button type="button" id="btn-en" aria-pressed="false" lang="en">
-      <span class="flag" aria-hidden="true">🇬🇧</span> English
-    </button>
+<body data-feed-base="./">
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="./">010 Agenda</a>
+    <nav class="lang" aria-label="Taal / Language">
+      <span aria-current="true">NL</span>
+      <a href="en/" hreflang="en" lang="en">EN</a>
+    </nav>
   </div>
 
-  <div data-lang="nl">
-    <h1>Feyenoord programma — agenda-abonnementen</h1>
-    <p>Agenda's die zichzelf bijhouden. Eredivisie, Champions League en KNVB Beker.</p>
-  </div>
-  <div data-lang="en" hidden>
-    <h1>Feyenoord fixtures — calendar feeds</h1>
-    <p>Auto-updating calendar subscriptions. Eredivisie, Champions League and KNVB Beker.</p>
-  </div>
-</header>
+  <main class="hero">
+    <div>
+      <div class="intro">
+        <h1>Het Feyenoord-programma in je eigen agenda</h1>
+        <p class="lede">Eén keer instellen. Daarna werkt je agenda zichzelf bij, ook als een wedstrijd wordt verzet.</p>
+      </div>
 
-<main>
-  <!-- ------------------------------ Nederlands ------------------------------ -->
-  <div data-lang="nl">
-    <p>Abonneer je in Apple Agenda, Google Agenda, Outlook of elke app die
-       <em>internetagenda's</em> ondersteunt. Op iPhone, iPad of Mac tik je op
-       <strong>Abonneer</strong> en bevestig je in je agenda-app.</p>
+      <ol class="steps">
+        <li class="step">
+          <div class="step-number" aria-hidden="true"></div>
+          <div class="step-body">
+            <h2>Kies hoe je het wilt zien</h2>
+            <div class="choice" role="group" aria-label="Kleuren">
+              <button type="button" data-option="two"><i class="swatch home"></i><i class="swatch away"></i>Thuis en uit apart</button>
+              <button type="button" data-option="one"><i class="swatch all"></i>Alles in één</button>
+            </div>
+            <p data-result="two">Je krijgt <strong>twee agenda's</strong>, Thuis en Uit, en geeft ze elk een eigen kleur.</p>
+            <p data-result="one" hidden>Je krijgt <strong>één agenda</strong> met elke wedstrijd. Neem er dan niet ook Thuis of Uit bij, anders staat alles dubbel.</p>
+          </div>
+        </li>
 
-    <div class="card">
-      <h2><span aria-hidden="true">🏟️</span> Alle wedstrijden</h2>
-      <p class="muted">Elke wedstrijd van Feyenoord, in alle competities.</p>
-      <a class="btn" href="webcal://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics">Abonneer</a>
-      <a class="btn secondary" href="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics">Link voor Google Agenda</a>
+        <li class="step">
+          <div class="step-number" aria-hidden="true"></div>
+          <div class="step-body">
+            <h2>Voeg hem toe aan je agenda</h2>
+            <div class="device">
+              <div class="tabs" role="tablist" aria-label="Agenda-app">
+                <button type="button" role="tab" data-tab="apple">iPhone / Mac</button>
+                <button type="button" role="tab" data-tab="google">Android / Google</button>
+                <button type="button" role="tab" data-tab="outlook">Outlook</button>
+              </div>
+
+              <div class="panel" data-panel="apple">
+                <div class="subscribe" data-result="two">
+                  <a data-feed="feyenoord-home.ics" href="webcal://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics"><i class="swatch home"></i>Abonneer op Thuis</a>
+                  <a data-feed="feyenoord-away.ics" href="webcal://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics"><i class="swatch away"></i>Abonneer op Uit</a>
+                </div>
+                <div class="subscribe" data-result="one" hidden>
+                  <a data-feed="feyenoord-all.ics" href="webcal://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics"><i class="swatch all"></i>Abonneer op Alles</a>
+                </div>
+                <p class="note">Je agenda vraagt of je wilt abonneren. Tik op <strong>Abonneer</strong>.</p>
+              </div>
+
+              <div class="panel" data-panel="google" hidden>
+                <ol>
+                  <li>Kopieer de link hieronder.</li>
+                  <li>Open <strong>calendar.google.com</strong> op een computer. In de app op je telefoon kan dit niet.</li>
+                  <li>Kies <strong>Andere agenda's → + → Via URL</strong> en plak de link.</li>
+                </ol>
+                <div class="copy" data-result="two">
+                  <span class="copy-name"><i class="swatch home"></i>Thuis</span><code data-feed="feyenoord-home.ics">https://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics</code><button type="button" data-feed="feyenoord-home.ics" data-copy="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics">Kopieer</button>
+                  <span class="copy-name"><i class="swatch away"></i>Uit</span><code data-feed="feyenoord-away.ics">https://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics</code><button type="button" data-feed="feyenoord-away.ics" data-copy="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics">Kopieer</button>
+                </div>
+                <div class="copy" data-result="one" hidden>
+                  <span class="copy-name"><i class="swatch all"></i>Alles</span><code data-feed="feyenoord-all.ics">https://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics</code><button type="button" data-feed="feyenoord-all.ics" data-copy="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics">Kopieer</button>
+                </div>
+                <p class="note">Google ververst om de 8 tot 24 uur. Daarna staat alles ook op je Android-telefoon.</p>
+              </div>
+
+              <div class="panel" data-panel="outlook" hidden>
+                <ol>
+                  <li>Kopieer de link hieronder.</li>
+                  <li>Kies <strong>Agenda toevoegen → Abonneren via internet</strong>.</li>
+                  <li>Plak de link, geef hem een naam en klik op <strong>Importeren</strong>.</li>
+                </ol>
+                <div class="copy" data-result="two">
+                  <span class="copy-name"><i class="swatch home"></i>Thuis</span><code data-feed="feyenoord-home.ics">https://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics</code><button type="button" data-feed="feyenoord-home.ics" data-copy="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics">Kopieer</button>
+                  <span class="copy-name"><i class="swatch away"></i>Uit</span><code data-feed="feyenoord-away.ics">https://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics</code><button type="button" data-feed="feyenoord-away.ics" data-copy="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics">Kopieer</button>
+                </div>
+                <div class="copy" data-result="one" hidden>
+                  <span class="copy-name"><i class="swatch all"></i>Alles</span><code data-feed="feyenoord-all.ics">https://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics</code><button type="button" data-feed="feyenoord-all.ics" data-copy="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics">Kopieer</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="step-number" aria-hidden="true"></div>
+          <div class="step-body">
+            <h2 data-result="two">Geef elke agenda een kleur</h2>
+            <p data-result="two">Open in je agenda-app de lijst met agenda's en kies bijvoorbeeld rood voor Thuis en grijs voor Uit. Daarna hoef je nooit meer iets te doen.</p>
+            <h2 data-result="one" hidden>Klaar</h2>
+            <p data-result="one" hidden>Je hoeft nooit meer iets te doen. Nieuwe en verzette wedstrijden komen er vanzelf in.</p>
+          </div>
+        </li>
+      </ol>
     </div>
 
-    <div class="card">
-      <h2><span aria-hidden="true">🔴</span> Alleen thuiswedstrijden</h2>
-      <a class="btn" href="webcal://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics">Abonneer</a>
-      <a class="btn secondary" href="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics">Link voor Google Agenda</a>
-    </div>
+    <aside class="preview" aria-label="Voorbeeld van je agenda">
+      <div class="phone" data-view="two">
+        <div class="screen">
+          <div class="screen-head"><small data-range>Komende wedstrijden</small><strong>Agenda</strong></div>
+          <div class="events" data-events>
+            <div class="placeholder"></div><div class="placeholder"></div><div class="placeholder"></div>
+            <div class="placeholder"></div><div class="placeholder"></div>
+          </div>
+        </div>
+      </div>
+      <div class="legend" data-result="two"><span><i class="swatch home"></i>Thuis</span><span><i class="swatch away"></i>Uit</span></div>
+      <div class="legend" data-result="one" hidden><span><i class="swatch all"></i>Alle wedstrijden</span></div>
+    </aside>
+  </main>
 
-    <div class="card">
-      <h2><span aria-hidden="true">⚪</span> Alleen uitwedstrijden</h2>
-      <a class="btn" href="webcal://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics">Abonneer</a>
-      <a class="btn secondary" href="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics">Link voor Google Agenda</a>
-    </div>
+  <section class="facts" aria-label="Goed om te weten">
+    <div><h3>Verzet? Schuift mee.</h3><p>Een verplaatste wedstrijd verhuist in je agenda. Je krijgt er nooit een dubbele bij. Staat de aftraptijd nog niet vast, dan zie je een hele-dag-afspraak.</p></div>
+    <div><h3>Rotterdamse tijd</h3><p>Zomer- en wintertijd gaan vanzelf goed, en ook in het buitenland kloppen de aftraptijden.</p></div>
+    <div><h3>Alle competities</h3><p>Eredivisie en Champions League, en de KNVB Beker zodra er geloot is. Twee keer per dag bijgewerkt.</p></div>
+  </section>
 
-    <div class="card">
-      <h2>Gebruik je Google Agenda?</h2>
-      <p class="muted">Met Google werkt de Abonneer-knop niet. Open Google Agenda op een
-         computer en kies <strong>Andere agenda's → + → Via URL</strong>. Plak daar de
-         <code>https://</code>-link van de grijze knop hierboven. Google ververst externe
-         agenda's op zijn eigen tempo, meestal elke 8 tot 24 uur.</p>
-    </div>
-
-    <p class="muted">Alle tijden zijn Rotterdamse tijd; zomer- en wintertijd gaan vanzelf
-       goed. De agenda's worden twee keer per dag bijgewerkt. Staat de aftraptijd nog niet
-       vast, dan zie je een hele dag-afspraak met “kickoff time TBD”. Bekerrondes verschijnen
-       pas nadat er geloot is, dus vroeg in het seizoen kan de KNVB Beker nog ontbreken.</p>
-  </div>
-
-  <!-- -------------------------------- English -------------------------------- -->
-  <div data-lang="en" hidden>
-    <p>Subscribe in Apple Calendar, Google Calendar, Outlook or any app that supports
-       <em>internet calendars</em>. On iPhone, iPad or Mac, tap <strong>Subscribe</strong> and
-       confirm when your calendar app asks.</p>
-
-    <div class="card">
-      <h2><span aria-hidden="true">🏟️</span> All matches</h2>
-      <p class="muted">Every Feyenoord fixture across all competitions.</p>
-      <a class="btn" href="webcal://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics">Subscribe</a>
-      <a class="btn secondary" href="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics">Link for Google Calendar</a>
-    </div>
-
-    <div class="card">
-      <h2><span aria-hidden="true">🔴</span> Home games only</h2>
-      <a class="btn" href="webcal://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics">Subscribe</a>
-      <a class="btn secondary" href="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics">Link for Google Calendar</a>
-    </div>
-
-    <div class="card">
-      <h2><span aria-hidden="true">⚪</span> Away games only</h2>
-      <a class="btn" href="webcal://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics">Subscribe</a>
-      <a class="btn secondary" href="https://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics">Link for Google Calendar</a>
-    </div>
-
-    <div class="card">
-      <h2>Using Google Calendar?</h2>
-      <p class="muted">Google can't use the Subscribe button. Open Google Calendar on a
-         computer, then <strong>Other calendars → + → From URL</strong> and paste the
-         <code>https://</code> link from the grey button above. Google refreshes external
-         calendars on its own schedule, usually every 8 to 24 hours.</p>
-    </div>
-
-    <p class="muted">All times are Rotterdam time, with summer and winter time handled for
-       you. Feeds are rebuilt twice a day. Fixtures with an unconfirmed kickoff appear as
-       all-day events marked “kickoff time TBD”. Cup rounds appear once the draw has been
-       made, so the KNVB Beker may be missing early in the season.</p>
-  </div>
-</main>
-
-<footer>
-  <div data-lang="nl">
+  <footer>
     <p>Football data provided by the Football-Data.org API. KNVB Beker-wedstrijden via ESPN.</p>
-    <p>Onofficieel supportersproject. Niet verbonden aan, goedgekeurd door of gelieerd met
-       Feyenoord Rotterdam, de KNVB, de Eredivisie of de UEFA.</p>
-  </div>
-  <div data-lang="en" hidden>
-    <p>Football data provided by the Football-Data.org API. KNVB Beker fixtures via ESPN.</p>
-    <p>Unofficial fan project. Not affiliated with, endorsed by, or connected to Feyenoord
-       Rotterdam, the KNVB, the Eredivisie, or UEFA.</p>
-  </div>
-  <p><a href="https://github.com/edwardsmit/feyenoord-calendar">GitHub</a></p>
-</footer>
-
-<script>
-  (function () {
-    var buttons = { nl: document.getElementById('btn-nl'), en: document.getElementById('btn-en') };
-
-    function show(language) {
-      document.querySelectorAll('[data-lang]').forEach(function (block) {
-        block.hidden = block.getAttribute('data-lang') !== language;
-      });
-      Object.keys(buttons).forEach(function (code) {
-        buttons[code].setAttribute('aria-pressed', String(code === language));
-      });
-      document.documentElement.lang = language;
-      try { localStorage.setItem('lang', language); } catch (e) { /* private mode */ }
-    }
-
-    Object.keys(buttons).forEach(function (code) {
-      buttons[code].addEventListener('click', function () { show(code); });
-    });
-
-    // Dutch is the default. English only if the visitor asked for it before;
-    // the browser's own language is deliberately ignored.
-    var stored = null;
-    try { stored = localStorage.getItem('lang'); } catch (e) { /* private mode */ }
-    if (stored === 'en') { show('en'); }
-  })();
-</script>
+    <p>Onofficieel supportersproject. Niet verbonden aan, goedgekeurd door of gelieerd met Feyenoord Rotterdam, de KNVB, de Eredivisie of de UEFA.</p>
+    <p><a href="https://github.com/edwardsmit/feyenoord-calendar">GitHub</a></p>
+  </footer>
+</div>
+<script src="assets/site.js"></script>
 </body>
 </html>
