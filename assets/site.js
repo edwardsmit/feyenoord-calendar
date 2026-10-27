@@ -233,6 +233,18 @@
       });
   }
 
+  /**
+   * Visitors without JavaScript see every option at once. With it, the options
+   * not chosen start hidden; setUpChoice() and setUpTabs() show the right ones.
+   */
+  function takeOverVisibility() {
+    document.querySelectorAll('[data-start-hidden]').forEach(function (element) {
+      element.hidden = true;
+      element.removeAttribute('data-start-hidden');
+    });
+  }
+
+  takeOverVisibility();
   rewriteFeedLinks();
   setUpChoice();
   setUpTabs();
