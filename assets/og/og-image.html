@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!--
+  Source of the share images (og-nl.png, og-en.png) and the Apple touch icon.
+  Rendered at 1200x630 with headless Chrome; see "The landing page" in CLAUDE.md.
+  Add ?en for the English text, or ?icon for the Apple touch icon (centre-crop to
+  630x630, then scale to 180x180).
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: "Hanken Grotesk"; font-weight: 400 800; src: url("../fonts/hanken-grotesk-latin.woff2") format("woff2"); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1200px; height: 630px; background: #ffffff; color: #111318; font-family: "Hanken Grotesk", Arial, sans-serif; overflow: hidden; }
+  .card { width: 1200px; height: 630px; display: grid; grid-template-columns: 1fr 300px; gap: 96px; align-items: center; padding: 0 80px; }
+  .brand { display: flex; align-items: center; gap: 14px; font-size: 30px; font-weight: 800; }
+  .brand::before { content: ""; width: 22px; height: 22px; border-radius: 50%; background: #d4001f; }
+  h1 { margin: 34px 0 26px; font-size: 76px; line-height: 1.02; letter-spacing: -.035em; font-weight: 800; }
+  .domain { font-size: 28px; color: #5d6270; font-weight: 600; }
+  .phone { height: 520px; border-radius: 46px; padding: 12px; background: #1a1c21; }
+  .screen { height: 100%; border-radius: 36px; background: #fff; padding: 34px 26px; display: grid; gap: 16px; align-content: start; }
+  .row { display: grid; grid-template-columns: 6px 1fr; gap: 14px; align-items: center; }
+  .row i { height: 50px; border-radius: 3px; background: #d4001f; }
+  .row.away i { background: #3d4451; }
+  .row b { display: block; height: 14px; border-radius: 7px; background: #e7e8ec; }
+  .row b + b { width: 55%; margin-top: 10px; background: #f0f1f4; }
+  /* Icon mode draws a 630px square in the middle; it is centre-cropped and scaled to 180px. */
+  .icon { width: 630px; height: 630px; margin: 0 auto; display: grid; place-items: center; background: #d4001f; }
+  .icon svg { width: 420px; height: 420px; }
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <div>
+    <div class="brand">Legioen Agenda</div>
+    <h1 id="title">Het Feyenoord-programma in je eigen agenda</h1>
+    <div class="domain">legioenagenda.nl</div>
+  </div>
+  <div class="phone"><div class="screen">
+    <div class="row away"><i></i><div><b></b><b></b></div></div>
+    <div class="row"><i></i><div><b></b><b></b></div></div>
+    <div class="row"><i></i><div><b></b><b></b></div></div>
+    <div class="row away"><i></i><div><b></b><b></b></div></div>
+    <div class="row"><i></i><div><b></b><b></b></div></div>
+    <div class="row"><i></i><div><b></b><b></b></div></div>
+  </div></div>
+</div>
+<script>
+  if (location.search.indexOf('en') !== -1) {
+    document.documentElement.lang = 'en';
+    document.getElementById('title').textContent = 'Every Feyenoord fixture in your own calendar';
+  }
+  if (location.search.indexOf('icon') !== -1) {
+    document.body.innerHTML = '<div class="icon"><svg viewBox="10 8 44 45"><rect x="14" y="17" width="36" height="33" rx="5" fill="none" stroke="#fff" stroke-width="5"/><path d="M14 28h36M24 11v10M40 11v10" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></div>';
+  }
+</script>
+</body>
+</html>

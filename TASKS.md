@@ -1,5 +1,17 @@
 # Tasks
 
+## Register the site with Google Search Console
+Status: open · Opened: 2026-10-27
+
+The SEO change adds `robots.txt`, `sitemap.xml`, share images and structured data. Google
+only picks the site up quickly once it is registered.
+
+- [ ] Add a **Domain** property for `legioenagenda.nl` and verify it with the TXT record
+      Google gives (Namecheap → Advanced DNS)
+- [ ] Submit `https://legioenagenda.nl/sitemap.xml`
+- [ ] Run both pages through the Rich Results Test (`WebSite` data should be detected)
+- [ ] Check the share preview of both pages, e.g. by pasting the link into WhatsApp
+
 ## Move the site to legioenagenda.nl
 Status: open · Opened: 2026-10-27
 
