@@ -10,8 +10,29 @@ only picks the site up quickly once it is registered.
       Google gives (Namecheap → Advanced DNS, host `@`). Verified 2026-10-27. Keep the
       record: Google checks it periodically and drops the property without it
 - [x] Submit `https://legioenagenda.nl/sitemap.xml` (2026-10-27)
-- [ ] Run both pages through the Rich Results Test (`WebSite` data should be detected)
+- [ ] Run both pages through the Rich Results Test: `WebSite` detected, and after #12 the home
+      fixtures' `SportsEvent` data without critical issues
 - [ ] Check the share preview of both pages, e.g. by pasting the link into WhatsApp
+- [ ] Open the live page on the iPhone with JavaScript off (Settings → Apps → Safari →
+      Advanced): every option visible, fixtures listed
+- [ ] Confirm a heartbeat run leaves `sitemap.xml` untouched. The first run after #11 moves
+      `lastmod` once, because #11 added visible text
+
+## Make the site easier to find
+Status: open · Opened: 2026-10-27
+
+The pages are technically in order (Search Console, sitemap with an honest `lastmod`,
+fixtures in the HTML, structured data). What is left, by impact:
+
+- [ ] A full season schedule page (`/programma/`, `/en/fixtures/`) written by the generator,
+      with the same `lastmod` rule. People search for "Feyenoord programma", not for
+      calendar subscriptions. Needs its own plan
+- [ ] Inbound links: a short, non-commercial post on the FR12 forum and r/Feyenoord,
+      supporter groups, and a request to fan sites. Draft the text first; it is posted by hand
+- [ ] Add the site to Bing Webmaster Tools (one-click import from Search Console)
+- [ ] IndexNow ping from the workflow when the visible text changed
+- [ ] After a few weeks of Search Console data: tune titles and descriptions to the searches
+      the site actually shows up for
 
 ## Move the site to legioenagenda.nl
 Status: open · Opened: 2026-10-27
