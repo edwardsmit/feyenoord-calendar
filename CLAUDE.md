@@ -6,8 +6,9 @@ Guidance for Claude Code working on this repo.
 
 Public iCalendar (`.ics`) feeds of Feyenoord Rotterdam fixtures, served from GitHub Pages
 and rebuilt twice a day by a GitHub Actions cron. No server and no runtime dependencies: a
-single Python standard-library script writes three `.ics` files, the workflow commits them,
-Pages serves them, and calendar apps subscribe to them.
+Python standard-library script writes three `.ics` files (and the upcoming fixtures into the
+landing pages), the workflow commits them, Pages serves them, and calendar apps subscribe to
+them.
 
 - `feyenoord-home.ics` — home games
 - `feyenoord-away.ics` — away games
@@ -24,15 +25,17 @@ what keeps early subscribers working.
 ├── CLAUDE.md
 ├── README.md                  # for subscribers: what it is, how to add it
 ├── LICENSE                    # MIT, code only
-├── index.html                 # Pages landing page (Dutch)
+├── index.html                 # Pages landing page (Dutch); fixture list is generated
 ├── en/index.html              # the same page in English
 ├── assets/                    # shared CSS, JS, self-hosted font (OFL), icons, share images
-├── robots.txt, sitemap.xml    # for search engines; both name the two pages only
+├── robots.txt                 # for search engines
+├── sitemap.xml                # generated; names the two pages only
 ├── feyenoord-*.ics            # generated feeds (committed)
 ├── last-run.txt               # heartbeat, see "Keeping the cron alive"
 ├── .github/workflows/update-calendars.yml
 └── scripts/
     ├── generate_ics.py        # the generator
+    ├── landing_page.py        # writes the upcoming fixtures into the pages, and the sitemap
     ├── validate_ics.py        # structural validator, runs in CI
     ├── run_tests.sh           # offline test suite, runs in CI
     ├── test_fixtures.json     # sample matches for offline runs
@@ -80,6 +83,9 @@ fixtures between 1 July and 30 June — the first year also holds last season's 
    keep in-season fixtures involving Feyenoord.
 4. Merge, de-duplicating on `(date, both team names)`; football-data.org wins.
 5. Split into home / away / all and render each to `.ics` in `OUTPUT_DIR` (default `.`).
+6. `landing_page.update_site()` reads both pages from the repository root, writes the next
+   fixtures between their markers, and writes the pages and `sitemap.xml` to `OUTPUT_DIR`.
+   A failure here is a `::warning`, never a failed run: the feeds come first.
 
 Every source is normalised into the `Match` dataclass at the top of `generate_ics.py`. Add
 fields there rather than passing dicts around.
@@ -138,24 +144,27 @@ fields there rather than passing dicts around.
 # Everything, offline, no key needed:
 bash scripts/run_tests.sh
 
-# Generate somewhere harmless and inspect:
-OUTPUT_DIR=/tmp/fey FIXTURES_JSON=scripts/test_fixtures.json python3 scripts/generate_ics.py
+# Generate somewhere harmless and inspect (TODAY pins what counts as upcoming):
+TODAY=2026-08-01 OUTPUT_DIR=/tmp/fey FIXTURES_JSON=scripts/test_fixtures.json python3 scripts/generate_ics.py
 python3 scripts/validate_ics.py /tmp/fey/feyenoord-*.ics
 
 # Against the real APIs:
 FOOTBALL_DATA_API_KEY=xxxx python3 scripts/generate_ics.py
 ```
 
-`run_tests.sh` checks five things: output matches `scripts/expected/`, two consecutive runs
+`run_tests.sh` checks eight things: the feeds match `scripts/expected/`, two consecutive runs
 are byte-identical, the feeds pass the validator, a source-side bulk touch of every
 `lastUpdated` changes nothing, and a genuine fixture change bumps that one event's
 `SEQUENCE` by exactly 1 while the other nine stay untouched. The last two exercise the
 carry-forward path, which the first three cannot reach because they generate into empty
-directories.
+directories. For the pages: the marked regions match `scripts/expected/upcoming-{nl,en}.html`,
+a change nobody can see (a venue) leaves `lastmod` alone, and a new kickoff time moves it.
+Every run sets `TODAY=2026-08-01` (or the day after), so the pages never depend on the clock.
 
 **If you intentionally change the output, regenerate the golden files** with
-`OUTPUT_DIR=scripts/expected FIXTURES_JSON=scripts/test_fixtures.json python3 scripts/generate_ics.py`
-and check the diff carefully — that diff is the only review the change gets.
+`bash scripts/run_tests.sh --update` and check the diff carefully — that diff is the only
+review the change gets. The page goldens hold only the generated regions, so editing copy
+elsewhere on the page needs no new goldens.
 
 `validate_ics.py` is dependency-free and checks CRLF everywhere, line length, BEGIN/END
 nesting, required VEVENT properties, unique UIDs, DTEND ordering, and that referenced TZIDs
@@ -169,8 +178,9 @@ offline suite and gates the `build` job, which checks the secret is present, gen
 validates, and commits. `permissions: contents: write` and `issues: write` and a `concurrency`
 group are required.
 
-The push trigger deliberately excludes `*.ics` and `last-run.txt` — the workflow commits
-those, and including them would loop.
+The push trigger deliberately excludes `*.ics`, `last-run.txt`, the two pages and
+`sitemap.xml` — the workflow commits those, and including them would loop. A played match
+changes the pages without changing any feed, and that run also counts as `refresh`.
 
 ### Keeping the cron alive
 
@@ -204,9 +214,17 @@ colours. Never offer Alles together with Thuis/Uit — that duplicates every mat
 - **Feed links follow the host.** `site.js` rewrites every `data-feed` link from the page's
   own URL, so they work on whichever host serves the page. The hardcoded `legioenagenda.nl`
   hrefs are only the no-JS fallback.
-- **The phone preview reads `feyenoord-all.ics`.** It relies on `DESCRIPTION` reading
+- **The phone preview has two tiers.** The generator writes the next five fixtures into the
+  page (`landing_page.py`), so crawlers and visitors without JavaScript see them. In the
+  browser, `site.js` then redraws the list from `feyenoord-all.ics`, counting from the
+  visitor's own today, so a match played since the last run drops off. If that fetch fails,
+  the written list stays. Both tiers must produce the same markup and text (day and month
+  names, "tijd n.n.b.", "uitgesteld"), or the list visibly jumps; change them together.
+- **Never edit between the `<!-- upcoming…:start -->` / `:end -->` markers.** The next run
+  overwrites it. Everything outside the markers is hand-written and left alone.
+- **The browser tier reads `DESCRIPTION`.** It relies on
   `<competition> - Home|Away match vs <opponent>` and on `STATUS:CANCELLED`. Changing that
-  text in `event_body()` breaks the preview silently (it shows nothing), so update
+  text in `event_body()` breaks the redraw silently (it shows nothing), so update
   `parseCalendar()`/`renderPreview()` with it.
 - **The font is self-hosted** (`assets/fonts/`, SIL OFL, licence alongside). Loading it from
   Google Fonts would send every visitor's IP to Google, which needs consent in the EU.
@@ -221,10 +239,14 @@ languages.
 
 - **No `FAQPage` markup.** Google stopped showing FAQ rich results for sites like this one in
   2023, so it would be dead weight.
-- **The next real gain is static fixtures.** The phone preview is built in the browser, so
-  crawlers see no fixtures. Writing the upcoming matches into the HTML at generation time,
-  with `SportsEvent` data, would give search engines content that changes twice a day. That
-  touches `generate_ics.py` and the golden tests, so it is a separate change.
+- **`SportsEvent` data covers exactly the listed fixtures**, because Google wants
+  structured data to match what the page shows. It sits between the `upcoming-data` markers.
+- **`<lastmod>` only moves when the visible text changes.** `sitemap.xml` is written whole
+  by the generator. Next to each `lastmod` it keeps a fingerprint of the page's visible text
+  (body text outside scripts, styles and templates, whitespace collapsed). A run that leaves
+  the fingerprint the same leaves `lastmod` the same: heartbeat runs, venue-only changes and
+  styling changes never move it. Google ignores a `lastmod` that keeps moving for nothing, so
+  don't loosen this. A hand edit of the copy is picked up on the next cron run.
 - **Share images and touch icon** come from `assets/og/og-image.html`. Serve the repo root
   locally (`python3 -m http.server`) and render with headless Chrome at a 1200x630 window: the
   page as-is gives `og-nl.png`, and `?en` gives `og-en.png`. `?icon` draws a 630px square;

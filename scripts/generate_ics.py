@@ -23,7 +23,14 @@ ESPN               (optional)  KNVB Beker only. No API key needed. This is an
 Offline mode
 ------------
 Set FIXTURES_JSON=/path/to/file.json to build from a file of match records and
-skip the network entirely. Used by the tests.
+skip the network entirely. Used by the tests, together with TODAY=YYYY-MM-DD,
+which pins the date the landing pages count "upcoming" from.
+
+The landing pages
+-----------------
+After the feeds, landing_page.py writes the next fixtures into index.html and
+en/index.html and rewrites sitemap.xml. A failure there is logged and never
+holds back the feeds.
 
 Standard library only - no pip install, ever.
 """
@@ -38,6 +45,8 @@ from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
+import landing_page
+
 # --------------------------------------------------------------------------- #
 # Configuration
 # --------------------------------------------------------------------------- #
@@ -51,6 +60,9 @@ TEAM_NAME = "Feyenoord"
 # every kickoff.
 TIMEZONE_ID = "Europe/Amsterdam"
 TZ = ZoneInfo(TIMEZONE_ID)
+
+# Where index.html and en/index.html are read from, whatever OUTPUT_DIR is.
+REPOSITORY_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 MATCH_DURATION = timedelta(hours=2)
 REFRESH_HOURS = 12
@@ -791,6 +803,19 @@ def load_matches() -> tuple[list[Match], list[str], str | None]:
     return merge(league_and_europe, cup), notes, cup_problem
 
 
+def today_in_rotterdam() -> date:
+    """
+    The date the landing pages count upcoming fixtures from.
+
+    TODAY=YYYY-MM-DD overrides the clock, so the tests give the same pages
+    whatever day they run on.
+    """
+    pinned = os.environ.get("TODAY")
+    if pinned:
+        return date.fromisoformat(pinned)
+    return datetime.now(TZ).date()
+
+
 def write_step_outputs(values: dict[str, str]) -> None:
     """
     Hand values to later workflow steps through the GITHUB_OUTPUT file.
@@ -856,6 +881,15 @@ def main() -> None:
 
     notes.append(f"Revisions: {first_seen} new, {changed} changed, "
                  f"{unchanged} carried forward unchanged.")
+
+    # The feeds are what subscribers depend on, so they are written first and
+    # a problem with the pages only produces a warning.
+    try:
+        notes.append(landing_page.update_site(
+            matches, today_in_rotterdam(), TZ, REPOSITORY_ROOT, out_dir))
+    except Exception as error:
+        notes.append(f"Landing pages not updated ({error}).")
+        print(f"::warning title=Landing pages not updated::{error}")
 
     print("\n=== Run notes ===", file=sys.stderr)
     for note in notes:
