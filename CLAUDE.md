@@ -13,7 +13,9 @@ Pages serves them, and calendar apps subscribe to them.
 - `feyenoord-away.ics` — away games
 - `feyenoord-all.ics` — everything
 
-Live at `https://edwardsmit.github.io/feyenoord-calendar/<file>.ics`.
+Live at `https://legioenagenda.nl/<file>.ics`, under the site name **Legioen Agenda**. The
+old `https://edwardsmit.github.io/feyenoord-calendar/<file>.ics` URLs 301 to it, which is
+what keeps early subscribers working.
 
 ## Layout
 
@@ -199,8 +201,8 @@ Uit in their own colours), then their calendar app (preselected from the user ag
 colours. Never offer Alles together with Thuis/Uit — that duplicates every match.
 
 - **Feed links follow the host.** `site.js` rewrites every `data-feed` link from the page's
-  own URL, so they keep working under a custom domain. The hardcoded `github.io` hrefs are
-  only the no-JS fallback.
+  own URL, so they work on whichever host serves the page. The hardcoded `legioenagenda.nl`
+  hrefs are only the no-JS fallback.
 - **The phone preview reads `feyenoord-all.ics`.** It relies on `DESCRIPTION` reading
   `<competition> - Home|Away match vs <opponent>` and on `STATUS:CANCELLED`. Changing that
   text in `event_body()` breaks the preview silently (it shows nothing), so update
@@ -228,6 +230,28 @@ gh api -X POST repos/edwardsmit/feyenoord-calendar/pages \
 
 Pages stays **branch-based** (`main` / root). Publishing from an artifact instead would commit
 nothing, which reintroduces the 60-day problem it takes a heartbeat commit to solve anyway.
+
+### The custom domain
+
+`legioenagenda.nl` is registered at Namecheap and points at Pages through the `CNAME` file in
+the repository root. Delete that file and the site falls back to `github.io`. The DNS is
+plain and holds no redirects; GitHub does them all (`github.io` → domain, `www` → apex, HTTP →
+HTTPS):
+
+| Record | Host | Value |
+| --- | --- | --- |
+| A | `@` | `185.199.108.153` … `185.199.111.153` |
+| AAAA | `@` | `2606:50c0:8000::153` … `2606:50c0:8003::153` |
+| CNAME | `www` | `edwardsmit.github.io` |
+| TXT | `_github-pages-challenge-edwardsmit` | domain verification, guards against takeover |
+
+The name leaves out the club name on purpose: "Feyenoord" is the club's registered mark.
+"Legioen" is registered too, by Grolsch, but only in class 32 (beer), which does not reach a
+calendar service. For the same reason, keep beer and drinks brands out of any future sponsor
+slot.
+
+**`UID_DOMAIN` in `generate_ics.py` keeps the old `github.io` name.** It is only an identifier,
+not a URL, and changing it would orphan every subscriber's events.
 
 The API key lives only in Actions secrets — football-data.org's terms forbid keeping
 credentials in an open-source repository, so this is deliberate.

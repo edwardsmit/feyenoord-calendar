@@ -10,10 +10,12 @@ name for trademark reasons. On 2026-10-27, SIDN listed it as unregistered.
       class 32 (beer) only, so a calendar service does not conflict with it. Keep beer and
       drinks brands out of any sponsor slot, because that would be the same class. "Feyenoord"
       belongs to the club and stays out of the domain. "Feijenoord" is not registered on its own.
-- [ ] Register `legioenagenda.nl`
-- [ ] DNS: apex A/AAAA records to GitHub Pages, `www` CNAME to `edwardsmit.github.io`
-- [ ] PR: add a `CNAME` file and update the canonical, `hreflang` and fallback feed URLs in
+- [x] Register `legioenagenda.nl` (Namecheap, 2026-10-27)
+- [x] DNS: apex A/AAAA records to GitHub Pages, `www` CNAME to `edwardsmit.github.io`,
+      verification TXT. All checked against Namecheap's nameservers.
+- [x] PR: add a `CNAME` file and update the canonical, `hreflang` and fallback feed URLs in
       `index.html`, `en/index.html`, `README.md` and `CLAUDE.md`
+- [ ] Wait for the .nl zone to publish the delegation, then merge the `CNAME` PR
 - [ ] Turn on "Enforce HTTPS" in the Pages settings
 - [ ] Check `curl -I` on the old `github.io` `.ics` URLs: each should return a 301 to the new host
 
