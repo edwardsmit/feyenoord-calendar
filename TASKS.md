@@ -6,8 +6,10 @@ Status: open · Opened: 2026-10-27
 Chosen over `010agenda.nl` (that one reads as a city-wide agenda) and kept free of the club
 name for trademark reasons. On 2026-10-27, SIDN listed it as unregistered.
 
-- [ ] Check the Benelux trademark register (boip.int) for "Legioen", and for "Feyenoord" and
-      "Feijenoord" for completeness
+- [x] Check the Benelux trademark register (boip.int). "Legioen" is held by Grolsch, in
+      class 32 (beer) only, so a calendar service does not conflict with it. Keep beer and
+      drinks brands out of any sponsor slot, because that would be the same class. "Feyenoord"
+      belongs to the club and stays out of the domain. "Feijenoord" is not registered on its own.
 - [ ] Register `legioenagenda.nl`
 - [ ] DNS: apex A/AAAA records to GitHub Pages, `www` CNAME to `edwardsmit.github.io`
 - [ ] PR: add a `CNAME` file and update the canonical, `hreflang` and fallback feed URLs in
