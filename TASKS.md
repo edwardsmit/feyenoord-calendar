@@ -6,9 +6,10 @@ Status: open · Opened: 2026-10-27
 The SEO change adds `robots.txt`, `sitemap.xml`, share images and structured data. Google
 only picks the site up quickly once it is registered.
 
-- [ ] Add a **Domain** property for `legioenagenda.nl` and verify it with the TXT record
-      Google gives (Namecheap → Advanced DNS)
-- [ ] Submit `https://legioenagenda.nl/sitemap.xml`
+- [x] Add a **Domain** property for `legioenagenda.nl` and verify it with the TXT record
+      Google gives (Namecheap → Advanced DNS, host `@`). Verified 2026-10-27. Keep the
+      record: Google checks it periodically and drops the property without it
+- [x] Submit `https://legioenagenda.nl/sitemap.xml` (2026-10-27)
 - [ ] Run both pages through the Rich Results Test (`WebSite` data should be detected)
 - [ ] Check the share preview of both pages, e.g. by pasting the link into WhatsApp
 
