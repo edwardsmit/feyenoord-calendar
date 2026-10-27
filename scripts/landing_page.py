@@ -41,6 +41,19 @@ UPCOMING_COUNT = 5
 # The same statuses event_body() in generate_ics.py turns into STATUS:CANCELLED.
 CALLED_OFF = ("POSTPONED", "SUSPENDED", "CANCELLED")
 
+# Where every home fixture is played. See render_structured_data().
+HOME_GROUND = {
+    "@type": "Place",
+    "name": "Stadion Feijenoord (De Kuip)",
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Van Zandvlietplein 1",
+        "postalCode": "3077 AA",
+        "addressLocality": "Rotterdam",
+        "addressCountry": "NL",
+    },
+}
+
 EVENT_STATUS = {
     "POSTPONED": "https://schema.org/EventPostponed",
     "SUSPENDED": "https://schema.org/EventPostponed",
@@ -146,9 +159,18 @@ def render_list(upcoming: list, language: str, timezone: ZoneInfo) -> str:
 
 
 def render_structured_data(upcoming: list, timezone: ZoneInfo) -> str:
-    """SportsEvent data for exactly the fixtures the page shows."""
+    """
+    SportsEvent data for the home fixtures the page shows.
+
+    Google only accepts an event with a location that has an address, and
+    football-data.org's free tier gives no venue at all. Feyenoord always play
+    at home in De Kuip, so home fixtures get that address. Away fixtures are
+    left out: their venue is unknown, and an event without one is invalid.
+    """
     events = []
     for match in upcoming:
+        if not match.is_home:
+            continue
         local = match.start_utc.astimezone(timezone)
         event = {
             "@type": "SportsEvent",
@@ -159,11 +181,12 @@ def render_structured_data(upcoming: list, timezone: ZoneInfo) -> str:
             "homeTeam": {"@type": "SportsTeam", "name": match.home},
             "awayTeam": {"@type": "SportsTeam", "name": match.away},
             "description": match.competition,
+            "location": HOME_GROUND,
         }
-        if match.venue:
-            event["location"] = {"@type": "Place", "name": match.venue}
         events.append(event)
 
+    if not events:
+        return "\n"
     data = json.dumps({"@context": "https://schema.org", "@graph": events},
                       ensure_ascii=False, indent=2)
     # "</" inside a script block would end it early, whatever the JSON says.
