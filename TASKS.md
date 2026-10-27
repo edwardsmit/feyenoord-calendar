@@ -18,7 +18,12 @@ name for trademark reasons. On 2026-10-27, SIDN listed it as unregistered.
 - [x] Wait for the .nl zone to publish the delegation (resolved 2026-10-27 07:52 UTC)
 - [x] Turn on "Enforce HTTPS" in the Pages settings (Let's Encrypt, valid until 2027-01-25)
 - [x] Check `curl -I` on the old `github.io` `.ics` URLs: each returns a 301 to the new host
-- [ ] Confirm an existing iPhone subscription still refreshes through the redirect
+- [x] iPhone subscription on the old `edwardsmit.github.io` URL refreshes without errors
+      and keeps its events (2026-10-27)
+- [ ] Confirm that iPhone picks up the next real feed change through the redirect. iOS shows
+      no refresh timestamp, so only a change proves it. The first likely change: kickoff times
+      for Feyenoord – NEC (13 Feb), Feyenoord – Telstar (20 Feb) and Ajax – Feyenoord (27 Feb),
+      currently all-day "kickoff time TBD" events. A new KNVB Beker round works too.
 
 ## Verify that all open work in this repo is captured in this TASKS.md
 Status: done · Opened: 2026-09-17
