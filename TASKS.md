@@ -15,9 +15,10 @@ name for trademark reasons. On 2026-10-27, SIDN listed it as unregistered.
       verification TXT. All checked against Namecheap's nameservers.
 - [x] PR: add a `CNAME` file and update the canonical, `hreflang` and fallback feed URLs in
       `index.html`, `en/index.html`, `README.md` and `CLAUDE.md`
-- [ ] Wait for the .nl zone to publish the delegation, then merge the `CNAME` PR
-- [ ] Turn on "Enforce HTTPS" in the Pages settings
-- [ ] Check `curl -I` on the old `github.io` `.ics` URLs: each should return a 301 to the new host
+- [x] Wait for the .nl zone to publish the delegation (resolved 2026-10-27 07:52 UTC)
+- [x] Turn on "Enforce HTTPS" in the Pages settings (Let's Encrypt, valid until 2027-01-25)
+- [x] Check `curl -I` on the old `github.io` `.ics` URLs: each returns a 301 to the new host
+- [ ] Confirm an existing iPhone subscription still refreshes through the redirect
 
 ## Verify that all open work in this repo is captured in this TASKS.md
 Status: done · Opened: 2026-09-17
