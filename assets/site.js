@@ -1,6 +1,6 @@
 // Landing page behaviour: the colour choice, the device tabs, copy buttons,
 // feed links that follow the current host, and the phone preview, which is
-// filled from the published feyenoord-all.ics.
+// redrawn from the published feyenoord-all.ics over the list in the page.
 (function () {
   var language = document.documentElement.lang === 'en' ? 'en' : 'nl';
   var text = {
@@ -11,6 +11,7 @@
       cancelled: 'uitgesteld',
       copied: 'Gekopieerd',
       copyFailed: 'Selecteer de link',
+      nonePlanned: 'Nog geen wedstrijden gepland.',
       loadFailed: 'Het programma kon niet worden geladen.'
     },
     en: {
@@ -20,6 +21,7 @@
       cancelled: 'postponed',
       copied: 'Copied',
       copyFailed: 'Select the link',
+      nonePlanned: 'No fixtures scheduled yet.',
       loadFailed: 'The fixtures could not be loaded.'
     }
   }[language];
@@ -135,7 +137,22 @@
     return events;
   }
 
-  /** Build the preview rows for the next few fixtures. */
+  /** Show a single line of text in place of the preview rows. */
+  function showNote(list, message) {
+    list.textContent = '';
+    var note = document.createElement('p');
+    note.className = 'note';
+    note.textContent = message;
+    list.append(note);
+  }
+
+  /**
+   * Build the preview rows for the next few fixtures.
+   *
+   * The page already holds this list, written by scripts/landing_page.py at the
+   * last feed update, in the same markup. Redrawing it here counts from the
+   * visitor's own today, so a match played since that update drops off.
+   */
   function renderPreview(events) {
     var list = document.querySelector('[data-events]');
     var today = new Date();
@@ -148,6 +165,10 @@
       .sort(function (a, b) { return a.DTSTART < b.DTSTART ? -1 : 1; })
       .slice(0, 5);
 
+    if (!upcoming.length) {
+      showNote(list, text.nonePlanned);
+      return;
+    }
     list.textContent = '';
     upcoming.forEach(function (event) {
       // DESCRIPTION reads like "Eredivisie - Away match vs PSV".
@@ -203,13 +224,12 @@
       })
       .then(function (source) { renderPreview(parseCalendar(source)); })
       .catch(function () {
+        // The list written into the page is still good enough; only say
+        // something when there is nothing to show at all.
         var list = document.querySelector('[data-events]');
-        list.textContent = '';
-        var message = document.createElement('p');
-        message.className = 'note';
-        message.style.padding = '12px 6px';
-        message.textContent = text.loadFailed;
-        list.append(message);
+        if (!list.querySelector('.event')) {
+          showNote(list, text.loadFailed);
+        }
       });
   }
 

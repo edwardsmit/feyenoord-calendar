@@ -88,13 +88,17 @@ jobs:
           # activity for 60 days, so record every run to keep the cron alive.
           date -u +%Y-%m-%dT%H:%MZ > last-run.txt
 
-          if [ -n "$(git status --porcelain -- '*.ics')" ]; then
+          # The landing pages list the upcoming fixtures, so a played match
+          # changes them even when no feed changed.
+          published=('*.ics' index.html en/index.html sitemap.xml)
+
+          if [ -n "$(git status --porcelain -- "${published[@]}")" ]; then
             message="chore: refresh Feyenoord fixtures ($(date -u +%Y-%m-%dT%H:%MZ))"
           else
             message="chore: heartbeat ($(date -u +%Y-%m-%dT%H:%MZ))"
           fi
 
-          git add -A -- '*.ics' last-run.txt
+          git add -A -- "${published[@]}" last-run.txt
           git commit -qm "$message"
           git push
 
