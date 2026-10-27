@@ -26,7 +26,8 @@ what keeps early subscribers working.
 ├── LICENSE                    # MIT, code only
 ├── index.html                 # Pages landing page (Dutch)
 ├── en/index.html              # the same page in English
-├── assets/                    # shared CSS, JS and the self-hosted font (OFL)
+├── assets/                    # shared CSS, JS, self-hosted font (OFL), icons, share images
+├── robots.txt, sitemap.xml    # for search engines; both name the two pages only
 ├── feyenoord-*.ics            # generated feeds (committed)
 ├── last-run.txt               # heartbeat, see "Keeping the cron alive"
 ├── .github/workflows/update-calendars.yml
@@ -210,6 +211,25 @@ colours. Never offer Alles together with Thuis/Uit — that duplicates every mat
 - **The font is self-hosted** (`assets/fonts/`, SIL OFL, licence alongside). Loading it from
   Google Fonts would send every visitor's IP to Google, which needs consent in the EU.
 - No club crest, club typeface or photos. "Feyenoord" appears only as a description.
+
+### Search engines
+
+Each page carries a canonical link, `hreflang` pairs (repeated in `sitemap.xml`), Open Graph
+tags and `WebSite` structured data. That structured data is what lets Google show "Legioen
+Agenda" as the site name. Keep titles, descriptions and the JSON-LD in sync between the two
+languages.
+
+- **No `FAQPage` markup.** Google stopped showing FAQ rich results for sites like this one in
+  2023, so it would be dead weight.
+- **The next real gain is static fixtures.** The phone preview is built in the browser, so
+  crawlers see no fixtures. Writing the upcoming matches into the HTML at generation time,
+  with `SportsEvent` data, would give search engines content that changes twice a day. That
+  touches `generate_ics.py` and the golden tests, so it is a separate change.
+- **Share images and touch icon** come from `assets/og/og-image.html`. Serve the repo root
+  locally (`python3 -m http.server`) and render with headless Chrome at a 1200x630 window: the
+  page as-is gives `og-nl.png`, and `?en` gives `og-en.png`. `?icon` draws a 630px square;
+  crop and scale it with `sips -c 630 630` and then `sips -z 180 180` to make
+  `apple-touch-icon.png`. Use a server, not `file://`, or the font does not load.
 
 ## Setting it up from scratch
 
