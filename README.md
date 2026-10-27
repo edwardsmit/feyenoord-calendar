@@ -9,11 +9,11 @@ Drie feeds, kies wat je wilt:
 
 | Feed | Abonnementslink |
 | --- | --- |
-| **Alle wedstrijden** | `https://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics` |
-| **Alleen thuis** | `https://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics` |
-| **Alleen uit** | `https://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics` |
+| **Alle wedstrijden** | `https://legioenagenda.nl/feyenoord-all.ics` |
+| **Alleen thuis** | `https://legioenagenda.nl/feyenoord-home.ics` |
+| **Alleen uit** | `https://legioenagenda.nl/feyenoord-away.ics` |
 
-Er is ook een [pagina met knoppen om direct te abonneren](https://edwardsmit.github.io/feyenoord-calendar/).
+Er is ook een [pagina met knoppen om direct te abonneren](https://legioenagenda.nl/).
 
 ## Toevoegen aan je agenda
 
@@ -92,11 +92,11 @@ is moved, your existing entry moves with it — you never get a duplicate.
 
 | Feed | Subscribe link |
 | --- | --- |
-| **All matches** | `https://edwardsmit.github.io/feyenoord-calendar/feyenoord-all.ics` |
-| **Home games only** | `https://edwardsmit.github.io/feyenoord-calendar/feyenoord-home.ics` |
-| **Away games only** | `https://edwardsmit.github.io/feyenoord-calendar/feyenoord-away.ics` |
+| **All matches** | `https://legioenagenda.nl/feyenoord-all.ics` |
+| **Home games only** | `https://legioenagenda.nl/feyenoord-home.ics` |
+| **Away games only** | `https://legioenagenda.nl/feyenoord-away.ics` |
 
-There is also a [landing page with one-tap buttons](https://edwardsmit.github.io/feyenoord-calendar/).
+There is also a [landing page with one-tap buttons](https://legioenagenda.nl/).
 
 ## Adding it to your calendar
 
@@ -141,7 +141,3 @@ Football data provided by the Football-Data.org API. KNVB Beker fixtures via ESP
 
 Unofficial fan project. Not affiliated with, endorsed by, or connected to Feyenoord Rotterdam,
 the KNVB, the Eredivisie, or UEFA.
-
----
-
-<sub>Gemaakt met [Claude Code](https://claude.com/claude-code).</sub>
