@@ -201,6 +201,12 @@ The page walks a visitor through three numbered steps: one calendar or two (Alle
 Uit in their own colours), then their calendar app (preselected from the user agent), then
 colours. Never offer Alles together with Thuis/Uit — that duplicates every match.
 
+- **The page works without JavaScript.** An inline script in `<head>` sets `.js` on `<html>`
+  before first paint. Without it, every option shows at once: both choices with their names,
+  all three app panels with a heading each, and the full links instead of copy buttons.
+  Elements that start hidden carry `data-start-hidden`, not `hidden` (`site.js` turns one into
+  the other); `js-only` and `no-js-only` mark what belongs to one case. Never put a plain
+  `hidden` in the HTML, or visitors without JavaScript can't reach it.
 - **Feed links follow the host.** `site.js` rewrites every `data-feed` link from the page's
   own URL, so they work on whichever host serves the page. The hardcoded `legioenagenda.nl`
   hrefs are only the no-JS fallback.

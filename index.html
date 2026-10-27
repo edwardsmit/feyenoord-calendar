@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>document.documentElement.classList.add('js');</script>
 <title>Feyenoord programma in je agenda — gratis en altijd actueel</title>
 <meta name="description" content="Zet het complete programma van Feyenoord gratis in je agenda op iPhone, Android of Outlook. Verzette wedstrijden schuiven vanzelf mee.">
 <link rel="canonical" href="https://legioenagenda.nl/">
@@ -59,12 +60,12 @@
           <div class="step-number" aria-hidden="true"></div>
           <div class="step-body">
             <h2>Kies hoe je het wilt zien</h2>
-            <div class="choice" role="group" aria-label="Kleuren">
+            <div class="choice js-only" role="group" aria-label="Kleuren">
               <button type="button" data-option="two"><i class="swatch home"></i><i class="swatch away"></i>Thuis en uit apart</button>
               <button type="button" data-option="one"><i class="swatch all"></i>Alles in één</button>
             </div>
-            <p data-result="two">Je krijgt <strong>twee agenda's</strong>, Thuis en Uit, en geeft ze elk een eigen kleur.</p>
-            <p data-result="one" hidden>Je krijgt <strong>één agenda</strong> met elke wedstrijd. Neem er dan niet ook Thuis of Uit bij, anders staat alles dubbel.</p>
+            <p data-result="two"><b class="no-js-only">Thuis en uit apart:</b> Je krijgt <strong>twee agenda's</strong>, Thuis en Uit, en geeft ze elk een eigen kleur.</p>
+            <p data-result="one" data-start-hidden><b class="no-js-only">Alles in één:</b> Je krijgt <strong>één agenda</strong> met elke wedstrijd. Neem er dan niet ook Thuis of Uit bij, anders staat alles dubbel.</p>
           </div>
         </li>
 
@@ -73,51 +74,54 @@
           <div class="step-body">
             <h2>Voeg hem toe aan je agenda</h2>
             <div class="device">
-              <div class="tabs" role="tablist" aria-label="Agenda-app">
+              <div class="tabs js-only" role="tablist" aria-label="Agenda-app">
                 <button type="button" role="tab" data-tab="apple">iPhone / Mac</button>
                 <button type="button" role="tab" data-tab="google">Android / Google</button>
                 <button type="button" role="tab" data-tab="outlook">Outlook</button>
               </div>
 
               <div class="panel" data-panel="apple">
+                <h3 class="panel-title no-js-only">iPhone / Mac</h3>
                 <div class="subscribe" data-result="two">
                   <a data-feed="feyenoord-home.ics" href="webcal://legioenagenda.nl/feyenoord-home.ics"><i class="swatch home"></i>Abonneer op Thuis</a>
                   <a data-feed="feyenoord-away.ics" href="webcal://legioenagenda.nl/feyenoord-away.ics"><i class="swatch away"></i>Abonneer op Uit</a>
                 </div>
-                <div class="subscribe" data-result="one" hidden>
+                <div class="subscribe" data-result="one" data-start-hidden>
                   <a data-feed="feyenoord-all.ics" href="webcal://legioenagenda.nl/feyenoord-all.ics"><i class="swatch all"></i>Abonneer op Alles</a>
                 </div>
                 <p class="note">Je agenda vraagt of je wilt abonneren. Tik op <strong>Abonneer</strong>.</p>
               </div>
 
-              <div class="panel" data-panel="google" hidden>
+              <div class="panel" data-panel="google" data-start-hidden>
+                <h3 class="panel-title no-js-only">Android / Google</h3>
                 <ol>
                   <li>Kopieer de link hieronder.</li>
                   <li>Open <strong>calendar.google.com</strong> op een computer. In de app op je telefoon kan dit niet.</li>
                   <li>Kies <strong>Andere agenda's → + → Via URL</strong> en plak de link.</li>
                 </ol>
                 <div class="copy" data-result="two">
-                  <span class="copy-name"><i class="swatch home"></i>Thuis</span><code data-feed="feyenoord-home.ics">https://legioenagenda.nl/feyenoord-home.ics</code><button type="button" data-feed="feyenoord-home.ics" data-copy="https://legioenagenda.nl/feyenoord-home.ics">Kopieer</button>
-                  <span class="copy-name"><i class="swatch away"></i>Uit</span><code data-feed="feyenoord-away.ics">https://legioenagenda.nl/feyenoord-away.ics</code><button type="button" data-feed="feyenoord-away.ics" data-copy="https://legioenagenda.nl/feyenoord-away.ics">Kopieer</button>
+                  <span class="copy-name"><i class="swatch home"></i>Thuis</span><code data-feed="feyenoord-home.ics">https://legioenagenda.nl/feyenoord-home.ics</code><button type="button" class="js-only" data-feed="feyenoord-home.ics" data-copy="https://legioenagenda.nl/feyenoord-home.ics">Kopieer</button>
+                  <span class="copy-name"><i class="swatch away"></i>Uit</span><code data-feed="feyenoord-away.ics">https://legioenagenda.nl/feyenoord-away.ics</code><button type="button" class="js-only" data-feed="feyenoord-away.ics" data-copy="https://legioenagenda.nl/feyenoord-away.ics">Kopieer</button>
                 </div>
-                <div class="copy" data-result="one" hidden>
-                  <span class="copy-name"><i class="swatch all"></i>Alles</span><code data-feed="feyenoord-all.ics">https://legioenagenda.nl/feyenoord-all.ics</code><button type="button" data-feed="feyenoord-all.ics" data-copy="https://legioenagenda.nl/feyenoord-all.ics">Kopieer</button>
+                <div class="copy" data-result="one" data-start-hidden>
+                  <span class="copy-name"><i class="swatch all"></i>Alles</span><code data-feed="feyenoord-all.ics">https://legioenagenda.nl/feyenoord-all.ics</code><button type="button" class="js-only" data-feed="feyenoord-all.ics" data-copy="https://legioenagenda.nl/feyenoord-all.ics">Kopieer</button>
                 </div>
                 <p class="note">Google ververst om de 8 tot 24 uur. Daarna staat alles ook op je Android-telefoon.</p>
               </div>
 
-              <div class="panel" data-panel="outlook" hidden>
+              <div class="panel" data-panel="outlook" data-start-hidden>
+                <h3 class="panel-title no-js-only">Outlook</h3>
                 <ol>
                   <li>Kopieer de link hieronder.</li>
                   <li>Kies <strong>Agenda toevoegen → Abonneren via internet</strong>.</li>
                   <li>Plak de link, geef hem een naam en klik op <strong>Importeren</strong>.</li>
                 </ol>
                 <div class="copy" data-result="two">
-                  <span class="copy-name"><i class="swatch home"></i>Thuis</span><code data-feed="feyenoord-home.ics">https://legioenagenda.nl/feyenoord-home.ics</code><button type="button" data-feed="feyenoord-home.ics" data-copy="https://legioenagenda.nl/feyenoord-home.ics">Kopieer</button>
-                  <span class="copy-name"><i class="swatch away"></i>Uit</span><code data-feed="feyenoord-away.ics">https://legioenagenda.nl/feyenoord-away.ics</code><button type="button" data-feed="feyenoord-away.ics" data-copy="https://legioenagenda.nl/feyenoord-away.ics">Kopieer</button>
+                  <span class="copy-name"><i class="swatch home"></i>Thuis</span><code data-feed="feyenoord-home.ics">https://legioenagenda.nl/feyenoord-home.ics</code><button type="button" class="js-only" data-feed="feyenoord-home.ics" data-copy="https://legioenagenda.nl/feyenoord-home.ics">Kopieer</button>
+                  <span class="copy-name"><i class="swatch away"></i>Uit</span><code data-feed="feyenoord-away.ics">https://legioenagenda.nl/feyenoord-away.ics</code><button type="button" class="js-only" data-feed="feyenoord-away.ics" data-copy="https://legioenagenda.nl/feyenoord-away.ics">Kopieer</button>
                 </div>
-                <div class="copy" data-result="one" hidden>
-                  <span class="copy-name"><i class="swatch all"></i>Alles</span><code data-feed="feyenoord-all.ics">https://legioenagenda.nl/feyenoord-all.ics</code><button type="button" data-feed="feyenoord-all.ics" data-copy="https://legioenagenda.nl/feyenoord-all.ics">Kopieer</button>
+                <div class="copy" data-result="one" data-start-hidden>
+                  <span class="copy-name"><i class="swatch all"></i>Alles</span><code data-feed="feyenoord-all.ics">https://legioenagenda.nl/feyenoord-all.ics</code><button type="button" class="js-only" data-feed="feyenoord-all.ics" data-copy="https://legioenagenda.nl/feyenoord-all.ics">Kopieer</button>
                 </div>
               </div>
             </div>
@@ -129,8 +133,8 @@
           <div class="step-body">
             <h2 data-result="two">Geef elke agenda een kleur</h2>
             <p data-result="two">Open in je agenda-app de lijst met agenda's en kies bijvoorbeeld rood voor Thuis en grijs voor Uit. Daarna hoef je nooit meer iets te doen.</p>
-            <h2 data-result="one" hidden>Klaar</h2>
-            <p data-result="one" hidden>Je hoeft nooit meer iets te doen. Nieuwe en verzette wedstrijden komen er vanzelf in.</p>
+            <h2 class="js-only" data-result="one" data-start-hidden>Klaar</h2>
+            <p class="js-only" data-result="one" data-start-hidden>Je hoeft nooit meer iets te doen. Nieuwe en verzette wedstrijden komen er vanzelf in.</p>
           </div>
         </li>
       </ol>
@@ -147,7 +151,7 @@
         </div>
       </div>
       <div class="legend" data-result="two"><span><i class="swatch home"></i>Thuis</span><span><i class="swatch away"></i>Uit</span></div>
-      <div class="legend" data-result="one" hidden><span><i class="swatch all"></i>Alle wedstrijden</span></div>
+      <div class="legend js-only" data-result="one" data-start-hidden><span><i class="swatch all"></i>Alle wedstrijden</span></div>
     </aside>
   </main>
 

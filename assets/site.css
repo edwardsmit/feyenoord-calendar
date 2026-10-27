@@ -53,6 +53,11 @@ a { color: inherit; }
 h1, h2, h3 { text-wrap: balance; overflow-wrap: break-word; hyphens: auto; }
 [hidden] { display: none !important; }
 
+/* Without JavaScript every option shows at once and the controls that need a
+   script are left out. The inline script in <head> sets .js before first paint. */
+.js .no-js-only, .js [data-start-hidden] { display: none; }
+html:not(.js) .js-only { display: none !important; }
+
 .wrap {
   max-width: 1120px;
   margin: 0 auto;
@@ -117,6 +122,8 @@ h1 { font-size: clamp(36px, 5.4vw, 58px); line-height: 1.03; letter-spacing: -.0
 .tabs button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--fg); }
 .panel { padding: 18px; display: grid; gap: 14px; }
 .panel ol { margin: 0; padding-left: 1.3em; display: grid; gap: 6px; }
+.panel-title { margin: 0; font-size: 16px; }
+html:not(.js) .panel + .panel { border-top: 1px solid var(--line); }
 .note { margin: 0; font-size: 14px; color: var(--muted); }
 
 .subscribe { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -137,6 +144,10 @@ h1 { font-size: clamp(36px, 5.4vw, 58px); line-height: 1.03; letter-spacing: -.0
   border-radius: 8px; padding: 6px 12px; cursor: pointer;
 }
 .copy button:hover { border-color: var(--fg); }
+/* No copy button without JavaScript: show the whole link, selected in one tap. */
+/* A fixed name column lines up the separate Thuis/Uit and Alles blocks. */
+html:not(.js) .copy { grid-template-columns: 5.5em minmax(0, 1fr); }
+html:not(.js) .copy code { white-space: normal; overflow-wrap: anywhere; user-select: all; -webkit-user-select: all; }
 
 /* Phone preview */
 .preview { position: sticky; top: 24px; display: grid; gap: 14px; justify-items: center; }
